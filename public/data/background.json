@@ -1,0 +1,19 @@
+{
+    "api": [
+        {
+            "name": "默认壁纸",
+            "url": "",
+            "images": [
+                "/image/background/home.jpg", "/image/background/home.jpeg", "/image/background/back.jpg", "/image/background/back.jpeg"
+            ]
+        }, {
+            "name": "每日一图",
+            "url": "https://api.dujin.org/bing/1920.php",
+            "images": []
+        }, {
+            "name": "随机风景",
+            "url": "https://api.btstu.cn/sjbz/api.php?lx=fengjing&format=images",
+            "images": []
+        }
+    ]  
+}

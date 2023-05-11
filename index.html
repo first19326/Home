@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <!-- <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="<%- description %>" />
+    <meta name="keywords" content="<%- keywords %>" />
+    <meta name="author" content="<%- author %>" />
+    <meta name="theme-color" content="#424242" />
+    <title><%- title %></title>
+    <!-- HarmonyOS Sans -->
+    <link type="text/css" rel="stylesheet" href="/css/font/HarmonyOS_Regular.css" />
+    <!-- Playball -->
+    <link type="text/css" rel="stylesheet" href="/css/font/Playball.css" />
+    <!-- LongCang -->
+    <link type="text/css" rel="stylesheet" href="/css/font/LongCang.css" />
+    <!-- UnidreamLED -->
+    <link type="text/css" rel="stylesheet" href="/css/font/UnidreamLED.css" />
+    <!-- Monda -->
+    <link type="text/css" rel="stylesheet" href="/css/font/Monda.css" />
+    <!-- Logo -->
+    <link rel="shortcut icon" href="/image/icon/favicon.ico">
+    <link rel="apple-touch-icon" href="/image/icon/apple-touch-icon.png">
+    <!-- Loading -->
+    <link rel="stylesheet" href="/css/loading/loading.min.css">
+    <!-- IE Out -->
+    <script>
+        if ( /*@cc_on!@*/ false || (!!window.MSInputMethodContext && !!document.documentMode))
+            window.location.href = "https://support.dmeng.net/upgrade-your-browser.html?referrer=" + encodeURIComponent(window.location.href);
+    </script>
+    <% if (count) { %>
+    <!-- 百度统计 -->
+    <script>
+        var _hmt = _hmt || [];
+        (function () {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm.js?<%- count %>";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+    <% } %>
+</head>
+
+<body class="loading">
+    <!--加载动画-->
+    <div id="loading-box">
+        <div class="loading-left-background"></div>
+        <div class="loading-right-background"></div>
+        <div class="spinner-box">
+            <div class="loader">
+                <div class="inner one"></div>
+                <div class="inner two"></div>
+                <div class="inner three"></div>
+            </div>
+            <div class="loading-word">
+                <p class="loading-title" id="loading-title"><%- title %></p>
+                <span id="loading-text">加载中</span>
+            </div>
+        </div>
+    </div>
+    <!-- 主体内容 -->
+    <div id="app"></div>
+    <!-- noscript -->
+    <noscript>
+        <div style="text-align: center">请开启 JavaScript</div>
+    </noscript>
+    <script type="module" src="/src/main.js"></script>
+</body>
+
+</html>
