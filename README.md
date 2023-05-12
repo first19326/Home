@@ -234,6 +234,9 @@ const collection = {
     ]  
 }
 ```
+
+> <font color="red">*</font> 部分浏览器不支持 `webp` 格式的图片，为了保证网站效果尽量不要使用该格式图片
+
 </details>
 
 <details>
