@@ -56,11 +56,11 @@ export const consoleText = function(list, mode) {
         case 'banner':
             list.forEach(function (item) {
                 let arr = item;
-                console.info('\n' + ' %c '+(arr[0])+' %c '+(arr[1])+' ' + '\n', 'color: #FADFA3; background: #030307; padding: 5px 0;', 'background: #FADFA3; padding: 5px 0;');
+                console.info('\n' + ' %c ' + (arr[0]) + ' %c ' + (arr[1]) + ' ' + '\n', 'color: #FADFA3; background: #030307; padding: 5px 0;', 'background: #FADFA3; padding: 5px 0;');
             });
             break;
         default:
-            console.info('%c'+list.join('\n'), colors.gray);
+            console.info('%c' + list.join('\n'), colors.gray);
             break;
     }
 };
