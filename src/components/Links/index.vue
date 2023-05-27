@@ -7,7 +7,7 @@
         <Swiper :modules="[Pagination]" :slides-per-view="1" :space-between="40" :pagination="{ el: '.swiper-pagination', clickable: true, bulletElement: 'div', renderBullet: changeBullet }">
             <SwiperSlide v-for="slide in linksData">
                 <el-row class="link-all" :gutter="20">
-                    <el-col :span="8" v-for="(link, index) in slide.slice(0, 6)"  :style="index < 3 ? 'margin-bottom: 20px' : null" @click="jumpLink(link.url)">
+                    <el-col :span="8" v-for="(link, index) in slide.slice(0, 6)"  :style="index >= 3 ? 'margin-top: 20px' : null" @click="jumpLink(link.url)">
                         <div class="item cards">
                             <Icon size="26"><component :is="collection[link.icon] ? collection[link.icon] : Link" /></Icon>
                             <span class="name">{{ link.name }}</span>
@@ -44,7 +44,7 @@
         "Train": Train
     };
 
-    // 网站链接数据
+    // 网站列表数据
     let linksData = ref([]);
 
     // Slide 数量
@@ -61,7 +61,7 @@
             .catch((err) => {
                 console.error(err);
                 ElMessage({
-                    message: "网站链接数据获取失败",
+                    message: "网站列表数据获取失败",
                     grouping: true,
                     icon: h(Error, {
                     theme: "filled",
