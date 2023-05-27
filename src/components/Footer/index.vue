@@ -36,12 +36,16 @@
 
 <style lang="scss" scoped>
     footer {
+        display: flex;
+        flex-direction: column;
+        align-content: center;
+        justify-content: center;
+        align-items: center;
         position: absolute;
         bottom: 0;
         left: 0;
         width: 100%;
-        height: 45px;
-        line-height: 45px;
+        height: 35px;
         background: rgb(0 0 0 / 25%);
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
@@ -51,14 +55,25 @@
         -webkit-animation: fade 0.5s;
 
         @media (max-width: 720px) {
-            height: 35px;
-            line-height: 35px;
-            font-size: 0.75rem;
+            .police.hidden {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .filing.hidden {
+                display: none;
+            }
         }
 
         .power {
+            font-size: 0.9rem;
             animation: fade;
             -webkit-animation: fade 0.3s;
+
+            @media (max-width: 720px) {
+                font-size: 0.85rem;
+            }
         }
 
         .lrc {
@@ -70,6 +85,10 @@
             animation: fade;
             -webkit-animation: fade 0.3s;
 
+            @media (max-width: 720px) {
+                font-size: 0.85rem;
+            }
+
             .lrc-text {
                 display: -webkit-box;
                 margin: 0 8px;
@@ -77,6 +96,10 @@
                 -webkit-line-clamp: 1;
                 overflow: hidden;
                 word-break: break-all;
+
+                @media (max-width: 720px) {
+                    margin-top: 2px;
+                }
             }
 
             .i-icon {
