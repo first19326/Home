@@ -2,7 +2,25 @@
     <!-- 功能区域 -->
     <div class="function">
         <el-row :gutter="20">
-            <Swiper :modules="[Pagination]" :slides-per-view="store.innerWidth > 910 ? 2 : 1" :enable="swiperSwitch" :touchStartPreventDefault="false" :initial-slide="1" :space-between="20" :pagination="{ el: '.swiper-pagination', bulletElement: 'div', renderBullet: changeBullet }">
+            <Swiper :modules="[Pagination]" :slides-per-view="store.innerWidth > 910 ? 2 : 1" :enable="swiperSwitch" :noSwiping="true" :noSwipingClass="`el-slider`" :touchStartPreventDefault="false" :space-between="20" :pagination="{ el: '.swiper-pagination', bulletElement: 'div', renderBullet: changeBullet }">
+                <SwiperSlide>
+                    <el-col :span="24">
+                        <div class="right cards">
+                            <div class="time">
+                                <div class="date">
+                                    <span>{{ currentTime.year }}&nbsp;年&nbsp;</span>
+                                    <span>{{ currentTime.month }}&nbsp;月&nbsp;</span>
+                                    <span>{{ currentTime.day }}&nbsp;日&nbsp;</span>
+                                    <span class="sm-hidden">{{ currentTime.weekday }}</span>
+                                </div>
+                                <div class="text">
+                                    <span>{{ currentTime.hour }}:{{ currentTime.minute }}:{{ currentTime.second }}</span>
+                                </div>
+                            </div>
+                            <Weather />
+                        </div>
+                    </el-col>
+                </SwiperSlide>
                 <SwiperSlide>
                     <el-col :span="24">
                         <div class="left">
@@ -36,24 +54,6 @@
                                 </div>
                             </div>
                             <!-- END -->
-                        </div>
-                    </el-col>
-                </SwiperSlide>
-                <SwiperSlide>
-                    <el-col :span="24">
-                        <div class="right cards">
-                            <div class="time">
-                                <div class="date">
-                                    <span>{{ currentTime.year }}&nbsp;年&nbsp;</span>
-                                    <span>{{ currentTime.month }}&nbsp;月&nbsp;</span>
-                                    <span>{{ currentTime.day }}&nbsp;日&nbsp;</span>
-                                    <span class="sm-hidden">{{ currentTime.weekday }}</span>
-                                </div>
-                                <div class="text">
-                                    <span>{{ currentTime.hour }}:{{ currentTime.minute }}:{{ currentTime.second }}</span>
-                                </div>
-                            </div>
-                            <Weather />
                         </div>
                     </el-col>
                 </SwiperSlide>
@@ -285,6 +285,7 @@
                     align-content: center;
                     position: relative;
                     margin-top: -15px;
+                    transform: translateZ(0);
                 
                     .swiper-pagination {
                         padding: 0 7px;
@@ -412,7 +413,6 @@
                                 }
 
                                 .el-slider {
-                                    margin-right: 12px;
                                     --el-slider-main-bg-color: #EFEFEF;
                                     --el-slider-runway-bg-color: #FFFFFF40;
                                     --el-slider-button-size: 16px;
