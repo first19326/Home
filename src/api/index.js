@@ -1,6 +1,5 @@
 // import axios from "axios";
 import fetchJsonp from "fetch-jsonp";
-import {getNowFormatDate} from "@/utils/tools.js";
 
 /**
  * 音乐播放器
@@ -52,8 +51,8 @@ export const getHitokoto = async () => {
  */
 
 // 获取每日一句
-export const getDailySentence = async () => {
-    const res = await fetchJsonp("https://sentence.iciba.com/index.php?c=dailysentence&m=getdetail&title=" + getNowFormatDate());
+export const getDailySentence = async (dateStr) => {
+    const res = await fetchJsonp("https://sentence.iciba.com/index.php?c=dailysentence&m=getdetail&title=" + dateStr);
     return await res.json();
 }
 

@@ -33,6 +33,7 @@
     import { Error } from "@icon-park/vue-next";
     import { mainStore } from "@/store";
     import { getDailySentence } from "@/api";
+    import { getNowFormatDate } from "@/utils/tools.js";
     const store = mainStore();
 
     // 站点logo
@@ -72,7 +73,7 @@
 
     // 获取每日一句
     const getDailySentenceData = () => {
-        getDailySentence()
+        getDailySentence(getNowFormatDate())
             .then((res) => {
                 if (res.errno === 0) {
                     dailySentence.content = res.content;
