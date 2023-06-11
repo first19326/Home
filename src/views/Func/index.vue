@@ -67,7 +67,7 @@
                     <Transition name="zoom">
                         <div class="list" v-show="musicListShow" @click.stop>
                             <CloseOne class="close" theme="filled" size="28" fill="#FFFFFF60" @click="musicListShow = false" />
-                            <Player :musicServer="playerData.server" :musicType="playerData.type" :musicId="playerData.id" :volume="volumeNum" :shuffle="true" ref="playerRef" />
+                            <Player :volume="volumeNum" :shuffle="true" ref="playerRef" />
                         </div>
                     </Transition>
                 </div>
@@ -150,11 +150,6 @@
     // 播放列表数据
     let musicListShow = ref(false);
     const playerRef = ref(null);
-    const playerData = reactive({
-        server: import.meta.env.VITE_MUSIC_SERVER,
-        type: import.meta.env.VITE_MUSIC_TYPE,
-        id: import.meta.env.VITE_MUSIC_ID,
-    });
 
     // 音乐播放暂停
     const changePlayState = () => {

@@ -5,8 +5,8 @@
 <script setup>
     import aplayer from "vue3-aplayer";
     import { h, ref, nextTick, onMounted } from "vue";
-    import { MusicOne, PlayWrong } from "@icon-park/vue-next";
-    import { getPlayerList } from "@/api";
+    import { MusicOne, PlayWrong, Error } from "@icon-park/vue-next";
+    import { getPlayerList, getLocalData } from "@/api";
     import { mainStore } from "@/store";
 
     const store = mainStore();
@@ -52,21 +52,6 @@
                 return value >= 0 && value <= 1;
             },
         },
-        // 歌曲服务器 ( netease-网易云, tencent-qq音乐, kugou-酷狗, xiami-小米音乐, baidu-百度音乐 )
-        musicServer: {
-            type: String,
-            default: "netease", // 'netease' | 'tencent' | 'kugou' | 'xiami' | 'baidu'
-        },
-        // 播放类型 ( song-歌曲, playlist-播放列表, album-专辑, search-搜索, artist-艺术家 )
-        musicType: {
-            type: String,
-            default: "playlist",
-        },
-        // id
-        musicId: {
-            type: String,
-            default: "3778678",
-        },
         // 列表是否默认折叠
         listFolded: {
             type: Boolean,
@@ -79,50 +64,74 @@
         },
     });
 
-    // 初始化播放器
-    onMounted(() => {
-        nextTick(() => {
-            try {
-                getPlayerList(props.musicServer, props.musicType, props.musicId).then(
-                    (res) => {
-                        console.log(res);
-                        // 生成歌单信息
-                        playIndex.value = Math.floor(Math.random() * res.length);
-                        playListCount.value = res.length;
-                        // 更改播放器加载状态
-                        store.musicIsOk = true;
-                        // 生成歌单
-                        res.forEach((v) => {
-                            playList.value.push({
-                                title: v.name || v.title,
-                                artist: v.artist || v.author,
-                                src: v.url || v.src,
-                                pic: v.pic,
-                                lrc: v.lrc,
-                            });
-                        });
-                        console.log(
-                            "音乐加载完成",
-                            playList.value,
-                            playIndex.value,
-                            playListCount.value,
-                            props.volume
+    // 获取音乐相关参数并解析
+    const getMusicData = () => {
+        getLocalData("/data/music.json")
+            .then((music) => {
+                console.log(music);
+
+                nextTick(() => {
+                    try {
+                        // 参数说明: 
+                        // 歌曲服务器 ( netease-网易云, tencent-qq音乐, kugou-酷狗, xiami-小米音乐, baidu-百度音乐 )
+                        // 播放类型 ( song-歌曲, playlist-播放列表, album-专辑, search-搜索, artist-艺术家 )
+                        getPlayerList(music.api, music.server || "netease", music.type || "playlist", music.id || "3778678").then(
+                            (res) => {
+                                console.log(res);
+                                // 生成歌单信息
+                                playIndex.value = Math.floor(Math.random() * res.length);
+                                playListCount.value = res.length;
+                                // 更改播放器加载状态
+                                store.musicIsOk = true;
+                                // 生成歌单
+                                res.forEach((v) => {
+                                    playList.value.push({
+                                        title: v.name || v.title,
+                                        artist: v.artist || v.author,
+                                        src: v.url || v.src,
+                                        pic: v.pic,
+                                        lrc: v.lrc,
+                                    });
+                                });
+                                console.log(
+                                    "音乐加载完成",
+                                    playList.value,
+                                    playIndex.value,
+                                    playListCount.value,
+                                    props.volume
+                                );
+                            }
                         );
+                    } catch (err) {
+                        console.error(err);
+                        store.musicIsOk = false;
+                        ElMessage({
+                            message: "播放器加载失败",
+                            grouping: true,
+                            icon: h(PlayWrong, {
+                                theme: "filled",
+                                fill: "#EFEFEF",
+                            }),
+                        });
                     }
-                );
-            } catch (err) {
+                });
+            })
+            .catch((err) => {
                 console.error(err);
-                store.musicIsOk = false;
                 ElMessage({
-                    message: "播放器加载失败",
+                    message: "音乐相关数据获取失败",
                     grouping: true,
-                    icon: h(PlayWrong, {
-                        theme: "filled",
-                        fill: "#EFEFEF",
+                    icon: h(Error, {
+                    theme: "filled",
+                    fill: "#EFEFEF",
                     }),
                 });
-            }
-        });
+            });
+    };
+
+    // 初始化播放器
+    onMounted(() => {
+        getMusicData();
     });
 
     // 播放暂停事件
