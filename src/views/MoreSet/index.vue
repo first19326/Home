@@ -173,6 +173,10 @@
                     margin-top: 30px;
                     height: 100%;
 
+                    :deep(.el-card__header) {
+                        font-weight: normal;
+                    }
+
                     :deep(.el-card__body) {
                         height: 100%;
 
