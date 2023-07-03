@@ -7,8 +7,8 @@
         <Swiper :modules="[Pagination]" :edgeSwipeDetection="true" :slides-per-view="1" :space-between="40" :pagination="{ el: '.swiper-pagination', clickable: true, bulletElement: 'div', renderBullet: changeBullet }">
             <SwiperSlide v-for="slide in linksData">
                 <el-row class="link-all" :gutter="20">
-                    <el-col :span="8" v-for="(link, index) in slide.slice(0, 6)"  :style="index >= 3 ? 'margin-top: 20px' : null" @click="jumpLink(link.url)">
-                        <div class="item cards">
+                    <el-col :span="8" v-for="(link, index) in slide.slice(0, 6)" :style="index >= 3 ? 'margin-top: 20px' : null">
+                        <div class="item cards" @click="jumpLink(link.url)">
                             <Icon size="26"><component :is="collection[link.icon] ? collection[link.icon] : Link" /></Icon>
                             <span class="name">{{ link.name }}</span>
                         </div>
