@@ -28,7 +28,7 @@
                             <!-- 音乐控制面板 -->
                             <div class="music" @mouseenter="volumeShow = true" @mouseleave="volumeShow = false" v-show="store.musicOpenState">
                                 <div class="btns">
-                                    <span @click="musicListShow = true">音乐列表</span>
+                                    <span @click="musicListShow">音乐列表</span>
                                     <span @click="store.musicOpenState = false">回到一言</span>
                                 </div>
                                 <div class="control">
@@ -63,10 +63,10 @@
             </Swiper>
             <!-- 音乐列表弹窗 -->
             <Transition name="fade">
-                <div class="music-list" v-show="musicListShow" @click="musicListShow = false">
+                <div class="music-list" v-show="store.musicListShow" @click="store.musicListShow = false">
                     <Transition name="zoom">
-                        <div class="list" v-show="musicListShow" @click.stop>
-                            <CloseOne class="close" theme="filled" size="28" fill="#FFFFFF60" @click="musicListShow = false" />
+                        <div class="list" v-show="store.musicListShow" @click.stop>
+                            <CloseOne class="close" theme="filled" size="28" fill="#FFFFFF60" @click="store.musicListShow = false" />
                             <Player :autoplay="store.playerAutoplay" :showLrc="store.playerShowLrc" :mutex="store.playerMutex" :shuffle="store.playerShuffle" :repeat="store.playerRepeat" :volume="volumeNum" ref="playerRef" />
                         </div>
                     </Transition>
@@ -78,7 +78,7 @@
 </template>
 
 <script setup>
-    import { ref, reactive, onMounted, onBeforeUnmount, watch } from "vue";
+    import { ref, onMounted, onBeforeUnmount, watch } from "vue";
     import { GoStart, PlayOne, Pause, GoEnd, CloseOne, VolumeMute, VolumeSmall, VolumeNotice } from "@icon-park/vue-next";
     import { getCurrentTime } from "@/utils/getTime";
 
@@ -162,8 +162,13 @@
     let volumeNum = ref(store.musicVolume ? store.musicVolume : 0.7);
 
     // 播放列表数据
-    let musicListShow = ref(false);
     const playerRef = ref(null);
+
+    // 展开音乐列表
+    const musicListShow = () => {
+        store.musicListShow = true;
+        playerRef.value.scrollTopMusic();
+    }
 
     // 音乐播放暂停
     const changePlayState = () => {

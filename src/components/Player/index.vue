@@ -4,6 +4,7 @@
 
 <script setup>
     import aplayer from "vue3-aplayer";
+    import smoothScroll from 'smoothscroll';
     import { h, ref, nextTick, onMounted } from "vue";
     import { MusicOne, PlayWrong, Error } from "@icon-park/vue-next";
     import { getPlayerList, getLocalData } from "@/api";
@@ -154,6 +155,7 @@
             player.value.currentMusic.title,
             player.value.currentMusic.artist
         );
+        scrollMusic();
         ElMessage({
             message: store.getPlayerData.name + " - " + store.getPlayerData.artist,
             grouping: true,
@@ -199,22 +201,25 @@
 
     // 切换上下曲
     const changeMusic = (type) => {
-        playIndex.value = player.value.playIndex;
-        playIndex.value += type ? 1 : -1;
-        // 判断是否处于最后/第一首
-        if (playIndex.value < 0) {
-            playIndex.value = playListCount.value - 1;
-        } else if (playIndex.value >= playListCount.value) {
-            playIndex.value = 0;
+    // 当前播放音乐置顶显示
+    const scrollMusic = () => {
+        if (store.musicListShow) {
+            let index = playList.value.indexOf(player.value.currentMusic);
+            let musicList = player.value.$.vnode.el.querySelector('.aplayer-list ol');
+            smoothScroll(index * 33, 500, null, musicList);
         }
-        // console.log(playIndex.value, playList.value[playIndex.value]);
+    }
+
+    const scrollTopMusic = () => {
+        let index = playList.value.indexOf(player.value.currentMusic);
+        let musicList = player.value.$.vnode.el.querySelector('.aplayer-list ol');
         nextTick(() => {
-            player.value.play();
+            musicList.scrollTop = index * 33;
         });
-    };
+    }
 
     // 暴露子组件方法
-    defineExpose({ playToggle, onMuted, changeVolume, changeMusic });
+    defineExpose({ playToggle, onMuted, changeVolume, changeMusic, scrollTopMusic });
 </script>
 
 <style lang="scss" scoped>
@@ -236,7 +241,7 @@
                 .aplayer-music {
                     flex-grow: initial;
                     margin-bottom: 2px;
-                    overflow: initial;
+                    overflow: hidden;
 
                     .aplayer-title {
                         margin-right: 6px;
@@ -250,7 +255,7 @@
 
                 .aplayer-lrc {
                     margin: 4px 0 6px 6px;
-                    height: 100%;
+                    height: 44px;
                     text-align: left;
                     mask: linear-gradient(#FFF 15%, #FFF 85%, hsla(0deg, 0%, 100%, 0.6) 90%, hsla(0deg, 0%, 100%, 0));
                     -webkit-mask: linear-gradient(#FFF 15%, #FFF 85%, hsla(0deg, 0%, 100%, 0.6) 90%, hsla(0deg, 0%, 100%, 0));
