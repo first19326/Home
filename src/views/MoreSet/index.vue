@@ -20,11 +20,11 @@
                             <span>更新日志</span>
                         </div>
                     </template>
-                    <div class="update-note">
-                        <div v-for="item in updateNote.new" :key="item" class="update-text">
+                    <div class="update-records">
+                        <div v-for="item in updateRecords.new" :key="item" class="update-text">
                             <AddOne theme="outline" size="22" />{{ item }}
                         </div>
-                        <div v-for="item in updateNote.fix" :key="item" class="update-text">
+                        <div v-for="item in updateRecords.fix" :key="item" class="update-text">
                             <Bug theme="outline" size="22" />{{ item }}
                         </div>
                     </div>
@@ -42,8 +42,9 @@
 </template>
 
 <script setup>
-    import { reactive, ref } from "vue";
-    import { CloseOne, SettingTwo, GithubOne, AddOne, Bug } from "@icon-park/vue-next";
+    import { reactive, ref, onMounted, h } from "vue";
+    import { CloseOne, SettingTwo, GithubOne, AddOne, Bug, Error } from "@icon-park/vue-next";
+    import { getLocalData } from "@/api";
     import { mainStore } from "@/store";
     import Set from "@/components/Set/index.vue";
     import config from "@/../package.json";
@@ -55,20 +56,29 @@
     let siteName = import.meta.env.VITE_SITE_NAME;
 
     // 更新日志
-    let updateNote = reactive({
-        new: [
-            "采用 Vue 进行重构",
-            "音乐歌单支持快速自定义",
-            "壁纸支持个性化设置",
-            "音乐播放器支持音量控制",
-        ],
-        fix: [
-            "修复天气 API",
-            "时光胶囊显示错误",
-            "移动端动画及细节",
-            "图标更换为 IconPark",
-        ],
+    let updateRecords = reactive({
+        new: [],
+        fix: [],
     });
+
+    const getUpdateRecordsData = () => {
+        getLocalData("/data/updateRecords.json")
+            .then((res) => {
+                updateRecords.new = res.new;
+                updateRecords.fix = res.fix;
+
+                console.log(res);
+            })
+            .catch(() => {
+                ElMessage({
+                    message: "更新日志获取失败",
+                    icon: h(Error, {
+                        theme: "filled",
+                        fill: "#EFEFEF",
+                    }),
+                });
+    });
+    }
 
     // 跳转源代码仓库
     const jumpTo = (url) => {
@@ -80,6 +90,10 @@
         let animate = document.querySelector(".animate");
         animate.classList.remove("resize");
     }
+
+    onMounted(() => {
+        getUpdateRecordsData();
+    });
 </script>
 
 <style lang="scss" scoped>
@@ -162,7 +176,7 @@
                     :deep(.el-card__body) {
                         height: 100%;
 
-                        .update-note {
+                        .update-records {
                             padding: 20px;
                             height: calc(100% - 56px);
                             overflow-y: auto;
