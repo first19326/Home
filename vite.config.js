@@ -28,6 +28,8 @@ export default ({
                     author: loadEnv(mode, process.cwd()).VITE_SITE_AUTHOR,
                     keywords: loadEnv(mode, process.cwd()).VITE_SITE_KEYWORDS,
                     description: loadEnv(mode, process.cwd()).VITE_SITE_DES,
+                    icon: loadEnv(mode, process.cwd()).VITE_SITE_ICON,
+                    icon_apple: loadEnv(mode, process.cwd()).VITE_SITE_ICON_APPLE,
                     count: loadEnv(mode, process.cwd()).VITE_SITE_BAIDUCOUNT,
                 },
             },
