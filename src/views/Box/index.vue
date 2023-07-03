@@ -34,6 +34,7 @@
         position: relative;
         margin-left: 0.75rem;
         height: 80%;
+        max-height: 864px;
         animation: fade;
         -webkit-animation: fade 0.5s;
 

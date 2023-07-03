@@ -77,7 +77,7 @@
                         fill: "#EFEFEF",
                     }),
                 });
-    });
+            });
     }
 
     // 跳转源代码仓库
@@ -104,6 +104,8 @@
         padding: 40px;
         width: 80%;
         height: 80%;
+        max-width: 1536px;
+        max-height: 864px;
         background: rgb(255 255 255 / 40%);
         border-radius: 6px;
         transform: translate(-50%, -50%);
@@ -139,7 +141,7 @@
 
                 .logo {
                     width: 100%;
-                    height: 260px;
+                    height: 150px;
                     // line-height: 5rem;
                     font-family: "Playball", cursive;
 
@@ -154,11 +156,10 @@
                     align-items: center;
 
                     .num {
-                        font-size: 2rem;
+                        font-size: 1.5rem;
                     }
 
                     .github {
-                        margin-top: 3px;
                         margin-left: 12px;
                         width: 24px;
                         height: 24px;
