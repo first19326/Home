@@ -188,6 +188,11 @@
         player.value.audio.volume = value;
     };
 
+    // 切换静音状态
+    const onMuted = (value) => {
+        player.value.audio.muted = value;
+    }
+
     const onSelectMusic = (val) => {
         console.log(val);
     };
@@ -209,7 +214,7 @@
     };
 
     // 暴露子组件方法
-    defineExpose({ playToggle, changeVolume, changeMusic });
+    defineExpose({ playToggle, onMuted, changeVolume, changeMusic });
 </script>
 
 <style lang="scss" scoped>

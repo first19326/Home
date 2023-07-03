@@ -44,10 +44,10 @@
                                         <span>{{ store.getPlayerData.name ? store.getPlayerData.name + " - " + store.getPlayerData.artist : "未播放音乐" }}</span>
                                     </div>
                                     <div class="volume" v-show="volumeShow">
-                                        <div class="icon">
-                                            <VolumeMute theme="filled" size="24" fill="#EFEFEF" v-if="volumeNum == 0" />
-                                            <VolumeSmall theme="filled" size="24" fill="#EFEFEF" v-else-if="volumeNum > 0 && volumeNum < 0.7" />
-                                            <VolumeNotice theme="filled" size="24" fill="#EFEFEF" v-else />
+                                        <div class="icon" @click="onMuted">
+                                            <VolumeMute theme="filled" size="24" fill="#EFEFEF" v-show="muted || volumeNum == 0"  />
+                                            <VolumeSmall theme="filled" size="24" fill="#EFEFEF" v-show="!muted && volumeNum > 0 && volumeNum < 0.7"  />
+                                            <VolumeNotice theme="filled" size="24" fill="#EFEFEF" v-show="!muted && volumeNum >= 0.7" />
                                         </div>
                                         <el-slider v-model="volumeNum" :show-tooltip="false" :min="0" :max="1" :step="0.01" />
                                     </div>
@@ -154,6 +154,9 @@
     );
 
 
+    // 静音状态
+    let muted = ref(false);
+
     // 音量条数据
     let volumeShow = ref(false);
     let volumeNum = ref(store.musicVolume ? store.musicVolume : 0.7);
@@ -171,6 +174,12 @@
     const changeMusicIndex = (type) => {
         playerRef.value.changeMusic(type);
     };
+
+    // 静音
+    const onMuted = () => {
+        muted.value = !muted.value;
+        playerRef.value.onMuted(muted.value);
+    }
 
     // 监听音量变化
     watch(
@@ -402,6 +411,11 @@
 
                                 .icon {
                                     margin-right: 12px;
+                                    transform: scale(1);
+
+                                    &:active {
+                                        transform: scale(0.95);
+                                    }
                                     
                                     span {
                                         display: block;
