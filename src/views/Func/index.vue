@@ -26,7 +26,7 @@
                         <div class="left">
                             <Hitokoto />
                             <!-- 音乐控制面板 -->
-                            <div class="music" @mouseenter="volumeShow = true" @mouseleave="volumeShow = false" v-show="store.musicOpenState">
+                            <div class="music cards" @mouseenter="volumeShow = true" @mouseleave="volumeShow = false" v-show="store.musicOpenState">
                                 <div class="btns">
                                     <span @click="musicListShow">音乐列表</span>
                                     <span @click="store.musicOpenState = false">回到一言</span>
