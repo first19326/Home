@@ -117,10 +117,21 @@
         getWidth();
         window.addEventListener("resize", getWidth);
 
-        // 空格键事件
+        // 键盘事件
         window.addEventListener("keydown", (e) => {
+            // 空格键事件
             if (e.code == "Space") {
                 changePlayState();
+            }
+
+            // CTRL + <—— 事件
+            if (e.ctrlKey && e.code == "ArrowLeft") {
+                changeMusicIndex(0);
+            }
+
+            // CTRL + ——> 事件
+            if (e.ctrlKey && e.code == "ArrowRight") {
+                changeMusicIndex(1);
             }
         });
     });
