@@ -2,7 +2,7 @@
     <!-- 功能区域 -->
     <div class="function">
         <el-row :gutter="20">
-            <Swiper :modules="[Pagination]" :slides-per-view="store.innerWidth > 910 ? 2 : 1" :enable="swiperSwitch" :noSwiping="true" :noSwipingClass="`el-slider`" :touchStartPreventDefault="false" :space-between="20" :pagination="{ el: '.swiper-pagination', bulletElement: 'div', renderBullet: changeBullet }">
+            <Swiper :modules="[Pagination]" :slides-per-view="store.innerWidth > 910 ? 2 : 1" :enable="swiperSwitch" :noSwiping="true" :noSwipingClass="`el-slider`" :touchStartPreventDefault="false" :edgeSwipeDetection="true" :space-between="20" :pagination="{ el: '.swiper-pagination', bulletElement: 'div', renderBullet: changeBullet }">
                 <SwiperSlide>
                     <el-col :span="24">
                         <div class="right cards">

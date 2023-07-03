@@ -4,7 +4,7 @@
             <Icon size="20"><Link /></Icon>
             <span class="title">网站列表</span>
         </div>
-        <Swiper :modules="[Pagination]" :slides-per-view="1" :space-between="40" :pagination="{ el: '.swiper-pagination', clickable: true, bulletElement: 'div', renderBullet: changeBullet }">
+        <Swiper :modules="[Pagination]" :edgeSwipeDetection="true" :slides-per-view="1" :space-between="40" :pagination="{ el: '.swiper-pagination', clickable: true, bulletElement: 'div', renderBullet: changeBullet }">
             <SwiperSlide v-for="slide in linksData">
                 <el-row class="link-all" :gutter="20">
                     <el-col :span="8" v-for="(link, index) in slide.slice(0, 6)"  :style="index >= 3 ? 'margin-top: 20px' : null" @click="jumpLink(link.url)">
