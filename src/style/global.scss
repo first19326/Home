@@ -10,13 +10,6 @@
 // 首次调用
 @include changeWidth;
 
-/* 小于 1380px 时 */
-@media (max-width: 1380px) {
-    .el-radio-group {
-        justify-content: center !important;
-    }
-}
-
 /* 小于 1200px 时 */
 @media (max-width: 1200px) {
     @include changeWidth($maxWidth: 1000px);

@@ -18,6 +18,11 @@ export const mainStore = defineStore("main", {
             playerTitle: null, // 当前播放歌曲名
             playerArtist: null, // 当前播放歌手名
             playerLrc: "歌词加载中", // 当前播放歌词
+            playerAutoplay: false, // 自动播放
+            playerShowLrc: true, // 歌词显示状态
+            playerMutex: true, // 暂停其他播放
+            playerShuffle: false, // 随机播放
+            playerRepeat: "list", // 循环播放模式
         }
     },
     getters: {
@@ -68,6 +73,6 @@ export const mainStore = defineStore("main", {
     persist: {
         key: 'data',
         storage: window.localStorage,
-        paths: ['coverType', 'musicVolume', 'siteStartShow'],
+        paths: ['coverType', 'musicVolume', 'siteStartShow', 'playerAutoplay', 'playerShowLrc', 'playerMutex', 'playerShuffle', 'playerRepeat'],
     },
 })

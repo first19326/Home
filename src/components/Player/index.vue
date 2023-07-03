@@ -1,5 +1,5 @@
 <template>
-    <aplayer showLrc ref="player" v-if="playList[0]" :music="playList[playIndex]" :list="playList" :autoplay="autoplay" :theme="theme" :repeat="repeat" :shuffle="shuffle" :listMaxHeight="listMaxHeight" :listFolded="listFolded" :volume="volume" @play="onPlay" @pause="onPause" @timeupdate="onTimeUp" @onSelectMusic="onSelectMusic" />
+    <aplayer ref="player" v-if="playList[0]" :music="playList[playIndex]" :list="playList" :autoplay="autoplay" :showLrc="showLrc" :mutex="mutex" :shuffle="shuffle" :repeat="repeat" :volume="volume" :theme="theme" :listMaxHeight="listMaxHeight" :listFolded="listFolded" @play="onPlay" @pause="onPause" @timeupdate="onTimeUp" @onSelectMusic="onSelectMusic" />
 </template>
 
 <script setup>
@@ -29,20 +29,25 @@
             type: Boolean,
             default: false,
         },
-        // 主题色
-        theme: {
-            type: String,
-            default: "#EFEFEF",
+        // 是否显示歌词
+        showLrc: {
+            type: Boolean,
+            default: true,
         },
-        // 音频循环播放
-        repeat: {
-            type: String,
-            default: "list", // 'list' | 'music' | 'none'
+        // 是否在该播放器播放时暂停其他播放器
+        mutex: {
+            type: Boolean,
+            default: true,
         },
         // 随机播放
         shuffle: {
             type: Boolean,
             default: false,
+        },
+        // 音频循环播放
+        repeat: {
+            type: String,
+            default: "list", // 'list' | 'music' | 'none'
         },
         // 默认音量
         volume: {
@@ -51,6 +56,11 @@
             validator: (value) => {
                 return value >= 0 && value <= 1;
             },
+        },
+        // 主题色
+        theme: {
+            type: String,
+            default: "#EFEFEF",
         },
         // 列表是否默认折叠
         listFolded: {
@@ -159,10 +169,12 @@
 
     // 音频时间更新事件
     const onTimeUp = () => {
+        if (store.playerShowLrc) {
         let playerRef = player.value.$.vnode.el;
         if (playerRef) {
             playerLrc.value = playerRef.getElementsByClassName("aplayer-lrc-current")[0].innerHTML;
             store.setPlayerLrc(playerLrc.value);
+        }
         }
     };
 

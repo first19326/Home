@@ -1,6 +1,6 @@
 <template>
     <footer>
-        <div class="power" v-show="!store.playerState">
+        <div class="power" v-show="!store.playerShowLrc || !store.playerState">
             <span>Copyright&nbsp;&copy;&nbsp;{{ startYear }}
                 <a :href="url">{{ author }}</a>
             </span>
@@ -11,7 +11,7 @@
             <span v-if="police.trim() != ''" class="police hidden">&nbsp;&amp;&nbsp;</span>
             <a v-if="police.trim() != ''" class="police hidden" href="https://www.beian.gov.cn/" target="_blank">{{ police }}</a>
         </div>
-        <div class="lrc" v-show="store.playerState">
+        <div class="lrc" v-show="store.playerShowLrc && store.playerState">
             <MusicOne theme="filled" size="18" fill="#EFEFEF" />
             <span class="lrc-text">
                 {{ store.getPlayerLrc ? store.getPlayerLrc : "&emsp;" }}

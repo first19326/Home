@@ -67,7 +67,7 @@
                     <Transition name="zoom">
                         <div class="list" v-show="musicListShow" @click.stop>
                             <CloseOne class="close" theme="filled" size="28" fill="#FFFFFF60" @click="musicListShow = false" />
-                            <Player :volume="volumeNum" :shuffle="true" ref="playerRef" />
+                            <Player :autoplay="store.playerAutoplay" :showLrc="store.playerShowLrc" :mutex="store.playerMutex" :shuffle="store.playerShuffle" :repeat="store.playerRepeat" :volume="volumeNum" ref="playerRef" />
                         </div>
                     </Transition>
                 </div>
