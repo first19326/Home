@@ -1,7 +1,7 @@
 <template>
     <footer>
         <div class="power" v-show="!store.playerState">
-            <span>Copyright&nbsp;&copy;&nbsp;{{ fullYear }}
+            <span>Copyright&nbsp;&copy;&nbsp;{{ startYear }}
                 <a :href="url">{{ author }}</a>
             </span>
             <!-- 站点备案 -->
@@ -31,7 +31,7 @@
     const filing = import.meta.env.VITE_SITE_FILING;
     const police = import.meta.env.VITE_SITE_POLICE;
 
-    let fullYear = new Date().getFullYear();
+    let startYear = import.meta.env.VITE_SITE_START.substr(0, 4);
 </script>
 
 <style lang="scss" scoped>
