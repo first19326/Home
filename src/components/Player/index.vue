@@ -75,57 +75,16 @@
         },
     });
 
-    // 获取音乐相关参数并解析
+    onMounted(() => {
+        getMusicData();
+    });
+
+    // 获取音乐数据
     const getMusicData = () => {
         getLocalData("/data/music.json")
-            .then((music) => {
-                console.log(music);
-
-                nextTick(() => {
-                    try {
-                        // 参数说明: 
-                        // 歌曲服务器 ( netease-网易云, tencent-qq音乐, kugou-酷狗, xiami-小米音乐, baidu-百度音乐 )
-                        // 播放类型 ( song-歌曲, playlist-播放列表, album-专辑, search-搜索, artist-艺术家 )
-                        getPlayerList(music.api, music.server || "netease", music.type || "playlist", music.id || "3778678").then(
-                            (res) => {
-                                console.log(res);
-                                // 生成歌单信息
-                                playIndex.value = Math.floor(Math.random() * res.length);
-                                playListCount.value = res.length;
-                                // 更改播放器加载状态
-                                store.musicIsOk = true;
-                                // 生成歌单
-                                res.forEach((v) => {
-                                    playList.value.push({
-                                        title: v.name || v.title,
-                                        artist: v.artist || v.author,
-                                        src: v.url || v.src,
-                                        pic: v.pic,
-                                        lrc: v.lrc,
-                                    });
-                                });
-                                console.log(
-                                    "音乐加载完成",
-                                    playList.value,
-                                    playIndex.value,
-                                    playListCount.value,
-                                    props.volume
-                                );
-                            }
-                        );
-                    } catch (err) {
-                        console.error(err);
-                        store.musicIsOk = false;
-                        ElMessage({
-                            message: "播放器加载失败",
-                            grouping: true,
-                            icon: h(PlayWrong, {
-                                theme: "filled",
-                                fill: "#EFEFEF",
-                            }),
-                        });
-                    }
-                });
+            .then((res) => {
+                console.log(res);
+                initMusic(res);
             })
             .catch((err) => {
                 console.error(err);
@@ -133,17 +92,58 @@
                     message: "音乐相关数据获取失败",
                     grouping: true,
                     icon: h(Error, {
-                    theme: "filled",
-                    fill: "#EFEFEF",
+                        theme: "filled",
+                        fill: "#EFEFEF",
                     }),
                 });
             });
-    };
+    }
 
     // 初始化播放器
-    onMounted(() => {
-        getMusicData();
-    });
+    const initMusic = (music) => {
+        nextTick(() => {
+            try {
+                getPlayerList(music.api || 'https://api.i-meto.com/meting/api/', music.server || 'netease', music.type || 'playlist', music.id || '3778678')
+                    .then((res) => {
+                        console.log(res);
+                        // 生成歌单信息
+                        playIndex.value = Math.floor(Math.random() * res.length);
+                        playListCount.value = res.length;
+                        // 更改播放器加载状态
+                        store.musicIsOk = true;
+                        // 生成歌单
+                        res.forEach((v) => {
+                            playList.value.push({
+                                title: v.name || v.title,
+                                artist: v.artist || v.author,
+                                src: v.url || v.src,
+                                pic: v.pic,
+                                lrc: v.lrc,
+                            });
+                        });
+                        console.log(
+                            "音乐加载完成",
+                            playList.value,
+                            playIndex.value,
+                            playListCount.value,
+                            props.volume
+                        );
+                    }
+                );
+            } catch (err) {
+                console.error(err);
+                store.musicIsOk = false;
+                ElMessage({
+                    message: "播放器加载失败",
+                    grouping: true,
+                    icon: h(PlayWrong, {
+                        theme: "filled",
+                        fill: "#EFEFEF",
+                    }),
+                });
+            }
+        });
+    };
 
     // 播放暂停事件
     const onPlay = () => {
@@ -172,11 +172,11 @@
     // 音频时间更新事件
     const onTimeUp = () => {
         if (store.playerShowLrc) {
-        let playerRef = player.value.$.vnode.el;
-        if (playerRef) {
-            playerLrc.value = playerRef.getElementsByClassName("aplayer-lrc-current")[0].innerHTML;
-            store.setPlayerLrc(playerLrc.value);
-        }
+            let playerRef = player.value.$.vnode.el;
+            if (playerRef) {
+                playerLrc.value = playerRef.getElementsByClassName("aplayer-lrc-current")[0].innerHTML;
+                store.setPlayerLrc(playerLrc.value);
+            }
         }
     };
 
