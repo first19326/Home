@@ -121,7 +121,6 @@
                     border-radius: 12px;
                     font-size: 0;
                     transition: .25s;
-                    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 
                     // &:hover {
                     //     background-color: rgba(0, 0, 0, 0.2509803922);
