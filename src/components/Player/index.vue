@@ -201,6 +201,9 @@
 
     // 切换上下曲
     const changeMusic = (type) => {
+        type === 1 ? player.value.nextMusic() : player.value.prevMusic();
+    };
+
     // 当前播放音乐置顶显示
     const scrollMusic = () => {
         if (store.musicListShow) {
