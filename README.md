@@ -8,7 +8,7 @@
 
 ### Demo
 
->由于 CDN 缓存原因，查看最新效果可能需要 `Ctrl` + `F5` 强制刷新浏览器缓存
+>由于 CDN 缓存原因，查看最新效果可能需要 <kbd>Ctrl</kbd> + <kbd>F5</kbd> 强制刷新浏览器缓存
 
 - [LiveForCode](https://www.worstone.cn)
 
@@ -42,7 +42,7 @@
 * 在 `终端` 中输入：
 
 ```bash
-# 安装 yarn
+# 安装 pnpm
 npm install -g pnpm
 
 # 安装依赖
@@ -79,18 +79,18 @@ pnpm build
 >本项目采用了基于 `MetingJS` 的 `Aplayer` 音乐播放器，可实现快速自定义歌单  
 ><font color="red">*</font> 仅支持 **中国大陆地区**
 
-请在 `.env` 文件中更改歌曲相关参数即可实现自定义歌单列表
+请在 `public/data/` 目录下的 `music.json` 文件中更改歌曲相关参数即可实现自定义歌单列表
 
-```bash
-# 歌曲 API 地址
-VITE_MUSIC_API = "https://api-meting.imsyy.top"
-# 歌曲服务器 ( netease-网易云, tencent-qq音乐 )
-VITE_MUSIC_SERVER = "netease"
-# 播放类型 ( song-歌曲, playlist-播放列表, album-专辑, search-搜索, artist-艺术家 )
-VITE_MUSIC_TYPE = "playlist"
-# 播放 ID
-VITE_MUSIC_ID = "7452421335"
+```json
+{
+    "api": "https://api.i-meto.com/meting/api/", 
+    "server": "netease",
+    "type": "playlist",
+    "id": "2243342814"
+}
 ```
+> <font color="red">*</font> **音乐播放器** 相关配置可以在网站 **设置** 页面进行修改
+
 </details>
 
 <details>
@@ -258,6 +258,46 @@ const collection = {
 </details>
 
 <details>
+<summary><h4>更新日志</h4></summary>
+
+请在 `public/data/` 目录下的 `updateRecords.json` 文件中配置
+
+```json
+{
+    "fix": [
+        "音乐播放器存在的问题",
+        "网站列表中链接点击范围不正确的问题"
+    ],
+    "new": [
+        "静音功能",
+        "网站图标配置",
+        "键盘控制事件",
+        "Swiper 相关配置",
+        "音乐播放器的相关设置",
+        "vue-aplayer.min.js 文件",
+        "动态获取更新日志的数据方式",
+        "当前音乐在音乐列表中置顶显示的效果"
+    ],
+    "delete": [
+        "Safari 浏览器中的默认点击样式"
+    ],
+    "update": [
+        "版权信息逻辑",
+        "网站加载逻辑",
+        "更新日志样式",
+        "更新日志内容种类",
+        "更新日志数据内容",
+        "音乐控制面板样式",
+        "音乐播放器切换音乐方法",
+        "时光胶囊以及设置页面样式",
+        "初始化音乐播放器的代码结构",
+        "打开音乐播放器按钮的显示动画"
+    ]
+}
+```
+</details>
+
+<details>
 <summary><h4>控制台输出</h4></summary>
 
 请在 `public/data/` 目录下的 `console.json` 文件中配置
@@ -275,6 +315,47 @@ const collection = {
 ]
 ```
 </details>
+
+### Q & A
+
+1. 加载速度的问题
+
+   在本地通过 `pnpm dev` 运行网站的时候，第一次加载会很慢，这是由于 **Vite** 项目的特性，并且本地运行的时候网络协议为 **HTTP/1.1**。如果想要改善网站加载速度慢的问题，可以考虑使用 **CDN** 对站点进行加速，可以参考 [静态网站部署](https://notes.worstone.cn/article/479644713/)。
+
+2. 网站路由的问题
+
+   由于 `vite-plugin-html` 插件 [#102](https://github.com/vbenjs/vite-plugin-html/issues/102) 问题导致的，可以通过 **修改插件的代码** 或 **降低插件版本** 修复此问题，后续插件修复该问题 **直接更新插件** 即可。
+
+   ```javascript
+   function createRewire(reg, page, baseUrl, proxyUrlKeys) {
+     return {
+       from: new RegExp(`^/${reg}*`),
+       to({ parsedUrl }) {
+         const pathname = parsedUrl.pathname;
+         const excludeBaseUrl = pathname.replace(baseUrl, "/");
+         const template = path.resolve(baseUrl, page.template);
+         if (excludeBaseUrl === "/") {
+           return template;
+         }
+         if (/\.(bmp|gif|ico|jpg|jpeg|png|js|css|json|html)/.test(excludeBaseUrl.toLowerCase())) {
+           return excludeBaseUrl;
+         }
+         const isApiUrl = proxyUrlKeys.some((item) => pathname.startsWith(path.resolve(baseUrl, item)));
+         return isApiUrl ? excludeBaseUrl : template;
+       }
+     };
+   }
+   ```
+
+3. 音乐播放器的问题
+
+   音乐播放器使用的是 `vue3-aplayer` 插件，只是在 `vue-aplayer` 插件基础上对 **Vue3** 进行适配，并未解决插件自身的问题。
+
+   新增的 **vue-aplayer.min.js** 文件是插件问题修复后打包的文件，替换插件中的对应文件即可解决音乐播放器相关问题。
+   
+   > <font color="red">*</font> 如果修改未生效，使用 `pnpm dev --force` 预览
+   
+   > 注意：此方法对 Vercel 部署的网站无效，后续会思考其他解决方案
 
 ### 技术栈
 
@@ -295,6 +376,60 @@ const collection = {
 
 ### 更新日志
 
+- 2023-07-06
+
+  `A` 新增了关于 `更新日志` 的注释
+
+  `U` 修改了 `更新日志` 内容种类
+
+  `U` 修改了 `更新日志` 数据内容
+
+  
+
+- 2023-07-03
+
+  `F` 修复了 `网站列表` 中链接点击范围不正确的问题
+
+  `F` 修复了音乐播放器存在的问题，修复方式参见 **Q & A**
+
+  <br/>
+
+  `A` 新增了网站图标配置
+
+  `A` 新增了 **vue-aplayer.min.js** 文件
+
+  `A` 新增了音乐播放器的相关设置
+
+  `A` 新增了当前音乐在音乐列表中置顶显示的效果
+
+  `A` 新增了动态获取 `更新日志` 的数据方式
+
+  `A` 新增了静音功能，可以通过点击 `音量图标` 开启
+
+  `A` 新增了 `Swiper` 相关配置，以适配移动端操作
+
+  `A` 新增了键盘控制事件，可以通过 <kbd>Ctrl</kbd> + <kbd>←</kbd> / <kbd>→</kbd> 切换音乐
+
+  `A` 新增了相关样式，去除了 Safari 浏览器中的默认点击样式
+
+  `U` 修改了音乐控制面板样式
+  
+  `U` 修改了初始化音乐播放器的代码结构
+  
+  `U` 修改了音乐播放器切换音乐方法
+  
+  `U` 修改了版权信息逻辑
+  
+  `U` 修改了 `打开音乐播放器` 按钮的显示动画
+  
+  `U` 修改了 `更新日志` 的样式，去掉标题粗体
+  
+  `U` 修改了 `时光胶囊` 以及 `设置` 页面样式，以适配更大屏幕设备
+  
+  `U` 修改了网站加载逻辑，调整了 `欢迎提示` 以及 `默哀模式` 执行时间点
+  
+  
+  
 - 2023-05-12
 
   `F` 修复了 Safari 浏览器默认背景图片无法显示的问题
@@ -303,7 +438,7 @@ const collection = {
 
   `F` 修复了默认背景图片无法下载的问题
 
-  `F` 修复了网站列表中链接点击范围不准确的问题
+  `F` 修复了 `网站列表` 中链接点击范围不准确的问题
 
   `F` 修复了 `720px - 910px` 屏幕尺寸无法打开音乐播放器的问题
 
