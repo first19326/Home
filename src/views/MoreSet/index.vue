@@ -21,11 +21,17 @@
                         </div>
                     </template>
                     <div class="update-records">
+                        <div v-for="item in updateRecords.fix" :key="item" class="update-text">
+                            <Bug theme="outline" size="22" />{{ item }}
+                        </div>
                         <div v-for="item in updateRecords.new" :key="item" class="update-text">
                             <AddOne theme="outline" size="22" />{{ item }}
                         </div>
-                        <div v-for="item in updateRecords.fix" :key="item" class="update-text">
-                            <Bug theme="outline" size="22" />{{ item }}
+                        <div v-for="item in updateRecords.delete" :key="item" class="update-text">
+                            <ReduceOne theme="outline" size="22" />{{ item }}
+                        </div>
+                        <div v-for="item in updateRecords.update" :key="item" class="update-text">
+                            <Redo theme="outline" size="22" />{{ item }}
                         </div>
                     </div>
               </el-card>
@@ -43,7 +49,7 @@
 
 <script setup>
     import { reactive, ref, onMounted, h } from "vue";
-    import { CloseOne, SettingTwo, GithubOne, AddOne, Bug, Error } from "@icon-park/vue-next";
+    import { CloseOne, SettingTwo, GithubOne, Bug, AddOne, ReduceOne, Redo, Error } from "@icon-park/vue-next";
     import { getLocalData } from "@/api";
     import { mainStore } from "@/store";
     import Set from "@/components/Set/index.vue";
@@ -57,15 +63,19 @@
 
     // 更新日志
     let updateRecords = reactive({
-        new: [],
         fix: [],
+        new: [],
+        delete: [],
+        update: [],
     });
 
     const getUpdateRecordsData = () => {
         getLocalData("/data/updateRecords.json")
             .then((res) => {
-                updateRecords.new = res.new;
                 updateRecords.fix = res.fix;
+                updateRecords.new = res.new;
+                updateRecords.delete = res.delete;
+                updateRecords.update = res.update;
 
                 console.log(res);
             })
