@@ -1,16 +1,15 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
     <meta charset="UTF-8" />
     <meta http-equiv="Access-Control-Allow-Origin" content="*">
     <!-- <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests"> -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="<%- description %>" />
-    <meta name="keywords" content="<%- keywords %>" />
-    <meta name="author" content="<%- author %>" />
+    <meta name="description" content="%VITE_SITE_DES%" />
+    <meta name="keywords" content="%VITE_SITE_KEYWORDS%" />
+    <meta name="author" content="%VITE_SITE_AUTHOR%" />
     <meta name="theme-color" content="#424242" />
-    <title><%- title %></title>
+    <title>%VITE_SITE_NAME%</title>
     <!-- HarmonyOS Sans -->
     <link type="text/css" rel="stylesheet" href="/css/font/HarmonyOS_Regular.css" />
     <!-- Playball -->
@@ -19,13 +18,9 @@
     <link type="text/css" rel="stylesheet" href="/css/font/LongCang.css" />
     <!-- UnidreamLED -->
     <link type="text/css" rel="stylesheet" href="/css/font/UnidreamLED.css" />
-    <!-- Monda -->
-    <link type="text/css" rel="stylesheet" href="/css/font/Monda.css" />
     <!-- Icon -->
-    <link rel="shortcut icon" href="<%- icon %>" />
-    <link rel="apple-touch-icon" href="<%- icon_apple %>" />
-    <!-- Loading -->
-    <link rel="stylesheet" href="/css/loading/loading.min.css">
+    <link rel="shortcut icon" href="%VITE_SITE_ICON%" />
+    <link rel="apple-touch-icon" href="%VITE_SITE_ICON_APPLE%" />
     <!-- IE Out -->
     <script>
         if ( /*@cc_on!@*/ false || (!!window.MSInputMethodContext && !!document.documentMode))
