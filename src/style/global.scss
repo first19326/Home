@@ -10,9 +10,9 @@
 // 首次调用
 @include changeWidth;
 
-/* 小于 1200px 时 */
-@media (max-width: 1200px) {
-    @include changeWidth($maxWidth: 1000px);
+/* 小于 1280px 时 */
+@media (max-width: 1280px) {
+    @include changeWidth($maxWidth: 1100px);
 }
 
 /* 小于 992px 时 */
