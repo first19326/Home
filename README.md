@@ -1,4 +1,4 @@
-## LiveForCode
+## WorstOne
 
 基于 [**IMSYY**](https://github.com/imsyy) 的个人主页 `HOME` 修改而来。
 
@@ -10,7 +10,7 @@
 
 >由于 CDN 缓存原因，查看最新效果可能需要 <kbd>Ctrl</kbd> + <kbd>F5</kbd> 强制刷新浏览器缓存
 
-- [LiveForCode](https://www.worstone.cn)
+- [WorstOne](https://www.worstone.cn)
 
 ### 功能
 
@@ -59,6 +59,57 @@ pnpm build
 ### 配置项
 
 <details>
+<summary><h4>数据</h4></summary>
+
+> 本项目数据相关配置，可使用接口获取相关数据
+> <font color="red">*</font> 如果 **配置接口** 获取相关数据，需要接口配置 **跨域** 相关内容
+
+请在 `.env` 环境变量中进行相关配置
+
+```
+# 歌曲
+## 请在 public/data 目录下的 music.json 文件中配置
+## 此处提供的服务可能会超量从而无法访问, 请自行部署
+## 请参照 https://github.com/xizeyoupan/Meting-API 进行 API 服务部署
+## 若使用 QQ音乐 歌单, 歌曲数量最好不要超出 50 首
+## 备用: https://api.wuenci.com/meting/api/
+## 参数说明: 
+## api 歌曲 API 地址
+## server 歌曲服务器 （ netease-网易云, tencent-QQ音乐 ）
+## type 播放类型 （ song-歌曲, playlist-播放列表, album-专辑, search-搜索, artist-艺术家 ）
+## id 播放目标 （ 歌曲ID 或 歌单ID 等 ）
+VITE_MUSIC_URL = "/data/music.json"
+
+# 社交链接
+## 请在 public/data 目录下的 socialLinks.json 文件中配置
+VITE_SOCIAL_URL = "/data/socialLinks.json"
+
+# 网站列表
+## 请在 public/data 目录下的 websiteLists.json 文件中配置
+VITE_LISTS_URL = "/data/websiteLists.json"
+
+# 背景图片
+## 请在 public/data 目录下的 background.json 文件中配置
+## 注: 请勿设置默认背景 url 属性, 请勿调整默认背景在配置文件中的位置
+VITE_BACKGROUND_URL = "/data/background.json"
+
+# 默哀模式
+## 请在 public/data 目录下的 mourn.json 文件中配置
+## 注: 不是默哀模式的开关, 而是手动开启默哀模式（非指定日期）
+VITE_MOURN_URL = "/data/mourn.json"
+
+# 更新日志
+## 请在 public/data 目录下的 updateRecords.json 文件中配置
+VITE_RECORDS_URL ="/data/updateRecords.json"
+
+# 控制台内容
+## 请在 public/data 目录下的 console.json 文件中配置
+VITE_CONSOLE_URL = "/data/console.json"
+```
+
+</details>
+
+<details>
 <summary><h4>天气</h4></summary>
 
 > <font color="red">*</font> 请将 ``VITE_WEATHER_KEY`` 替换为个人的 `Key`
@@ -89,22 +140,16 @@ pnpm build
     "id": "2243342814"
 }
 ```
-> <font color="red">*</font> **音乐播放器** 相关配置可以在网站 **设置** 页面进行修改
+> <font color="red">*</font> **音乐播放器** 相关配置可以在网站 **全局设置** 页面进行修改
 
 </details>
 
 <details>
 <summary><h4>每日一句</h4></summary>
 
-> 每日一句数据来源自 **金山词霸**
-> <font color="red">*</font> 每日一句会替换**站点简介**
+> **每日一句** 数据来源自 **金山词霸**，开启 **每日一句**会替换 **站点简介**
+> <font color="red">*</font> **每日一句** 相关配置可以在网站 **全局设置** 页面进行修改
 
-可在 `.env` 文件中更改 `VITE_SENTENCE_ENABLE` 参数开即可实现每日一句开启/关闭
-
-```bash
-# 每日一句 
-VITE_SENTENCE_ENABLE = "true"
-```
 </details>
 
 <details>
@@ -142,48 +187,96 @@ VITE_SENTENCE_ENABLE = "true"
 </details>
 
 <details>
+<summary><h4>一言数据</h4></summary>
+
+> **Hikotoko 一言** 相关数据通过对应接口获得，此处配置为接口失效显示的 **默认数据**
+
+请在 `.env` 环境变量中进行相关配置
+
+```
+# 一言数据（默认）
+VITE_HITOKOTO_TEXT = "简单地活着，肆意而又精彩。"
+VITE_HITOKOTO_FROM = "WorstOne"
+```
+
+</details>
+
+<details>
 <summary><h4>网站列表</h4></summary>
 
-请在 `public/data/` 目录下的 `websiteLinks.json` 文件中配置
+请在 `public/data/` 目录下的 `websiteLists.json` 文件中配置
 
 ```json
 [
-    [{
-        "icon": "Blog",
-        "name": "博客",
-        "url": "https://notes.worstone.cn/"
+    {
+        "icon": "Link",
+        "title": "网站列表",
+        "items": [
+            [
+                {
+                    "icon": "Blog",
+                    "name": "博客",
+                    "url": "https://notes.worstone.cn/"
+                }, {
+                    "icon": "Code",
+                    "name": "力扣",
+                    "url": "https://leetcode.cn/"
+                }, {
+                    "icon": "Search",
+                    "name": "搜索",
+                    "url": "https://kaifa.baidu.com/"
+                }, {
+                    "icon": "CompactDisc",
+                    "name": "音乐",
+                    "url": "https://music.163.com/"
+                }, {
+                    "icon": "Cloud",
+                    "name": "网盘",
+                    "url": "https://www.aliyundrive.com/"
+                }
+            ], [
+                    {
+                    "icon": "Train",
+                    "name": "开往",
+                    "url": "https://www.foreverblog.cn/go.html"
+                }, {
+                    "icon": "Book",
+                    "name": "背单词",
+                    "url": "https://kaiyiwing.gitee.io/qwerty-learner/"
+                }
+            ]
+        ]
     }, {
-        "icon": "Code",
-        "name": "力扣",
-        "url": "https://leetcode.cn/"
-    }, {
-        "icon": "Search",
-        "name": "搜索",
-        "url": "https://kaifa.baidu.com/"
-    }, {
-        "icon": "CompactDisc",
-        "name": "音乐",
-        "url": "https://music.163.com/"
-    }, {
-        "icon": "Cloud",
-        "name": "网盘",
-        "url": "https://www.aliyundrive.com/"
-    }], 
-    [{
-        "icon": "Train",
-        "name": "开往",
-        "url": "https://www.foreverblog.cn/go.html"
-    }, {
-        "icon": "Book",
-        "name": "背单词",
-        "url": "https://kaiyiwing.gitee.io/qwerty-learner/"
-    }]
+        "icon": "Bars",
+        "title": "功能列表",
+        "items": [
+            [
+                {
+                    "icon": "PencilAlt",
+                    "name": "一言",
+                    "method": "hitokoto"
+                }, {
+                    "icon": "SlidersH",
+                    "name": "播放器",
+                    "method": "player"
+                }, {
+                    "icon": "Music",
+                    "name": "音乐列表",
+                    "method": "music"
+                }, {
+                    "icon": "Cog",
+                    "name": "全局设置",
+                    "method": "setting"
+                }
+            ]
+        ]
+    }
 ]
 ```
 
-> 网站列表模块已引入触摸滑动插件 `Swiper`，支持分页操作，每页的网站链接不可超过 **6** 个（**超出部分不显示**）
+> **网站列表** 支持列表切换，可分别配置 **网站列表**、**功能列表** 以及 **友情链接** 等。每个列表已引入触摸滑动插件 `Swiper`，支持分页操作，每页项目不可超过 **6** 个（**超出部分不显示**）
 
-修改网站链接图标，需要修改 `src/components/Links/index.vue`
+修改网站链接图标，需要修改 `src/components/Lists/index.vue`
 
 - 引入图标组件
 - 在 `collection` 中对图标组件进行映射
@@ -193,7 +286,7 @@ VITE_SENTENCE_ENABLE = "true"
 import { Blog, Code, Search, CompactDisc, Cloud, Train, Book, Link } from "@vicons/fa";
     
 // 名称与组件集合
-const collection = {
+const icons = {
     "Blog": Blog,
     "Book": Book,
     "Cloud": Cloud,
@@ -206,6 +299,39 @@ const collection = {
 ```
 
 > 若**图标组件不存在**或通过图标名称**找不到对应组件**，则会默认使用 `Link` 图标
+
+修改关联方法，需要修改 `src/components/Lists/index.vue`
+
+- 创建相关方法
+- 在 `methods` 中对方法进行映射
+
+```vue
+<script setup>
+const hitokoto = () => {
+    store.musicOpenState = false;
+};
+
+const musicPlayer = () => {
+	store.musicOpenState = true;
+};
+
+const musicList = () => {
+	store.musicListShow = true;
+};
+
+const setting = () => {
+	store.setOpenState = true;
+};
+
+// 方法名称与方法集合
+const methods = {
+    "hitokoto": hitokoto,
+    "music": musicList,
+    "player": musicPlayer,
+    "setting": setting
+};
+</script>
+```
 </details>
 
 <details>
@@ -213,29 +339,28 @@ const collection = {
 
 请在 `public/data/` 目录下的 `background.json` 文件中配置
 
-> 若 `api.url` 参数为空，则会**随机**从 `api.images` 里面选取图片
+> 若 `url` 参数为空，则会 **随机** 从 `images` 里面选取图片
+> <font color="red">*</font> 请勿设置 **默认背景** `url` 属性，请勿调整 **默认背景** 在配置文件中的位置
 
 ```json
-{
-    "api": [
-        {
-            "name": "默认壁纸",
-            "url": "",
-            "images": [
-                "/image/background/home.jpg", "/image/background/home.jpeg", 
-                "/image/background/back.jpg", "/image/background/back.jpeg"
-            ]
-        }, {
-            "name": "每日一图",
-            "url": "https://api.dujin.org/bing/1920.php",
-            "images": []
-        }, {
-            "name": "随机风景",
-            "url": "https://api.btstu.cn/sjbz/api.php?lx=fengjing&format=images",
-            "images": []
-        }
-    ]  
-}
+[
+    {
+        "name": "默认背景",
+        "url": "",
+        "images": [
+            "/image/background/home.jpg", "/image/background/home.jpeg", 
+            "/image/background/back.jpg", "/image/background/back.jpeg"
+        ]
+    }, {
+        "name": "每日一图",
+        "url": "https://api.dujin.org/bing/1920.php",
+        "images": []
+    }, {
+        "name": "随机风景",
+        "url": "https://api.btstu.cn/sjbz/api.php?lx=fengjing&format=images",
+        "images": []
+    }
+]
 ```
 
 > <font color="red">*</font> 部分浏览器不支持 `webp` 格式的图片，为了保证网站效果尽量不要使用该格式图片
@@ -322,32 +447,8 @@ const collection = {
 
    在本地通过 `pnpm dev` 运行网站的时候，第一次加载会很慢，这是由于 **Vite** 项目的特性，并且本地运行的时候网络协议为 **HTTP/1.1**。如果想要改善网站加载速度慢的问题，可以考虑使用 **CDN** 对站点进行加速，可以参考 [静态网站部署](https://notes.worstone.cn/article/479644713/)。
 
-2. 网站路由的问题
 
-   由于 `vite-plugin-html` 插件 [#102](https://github.com/vbenjs/vite-plugin-html/issues/102) 问题导致的，可以通过 **修改插件的代码** 或 **降低插件版本** 修复此问题，后续插件修复该问题 **直接更新插件** 即可。
-
-   ```javascript
-   function createRewire(reg, page, baseUrl, proxyUrlKeys) {
-     return {
-       from: new RegExp(`^/${reg}*`),
-       to({ parsedUrl }) {
-         const pathname = parsedUrl.pathname;
-         const excludeBaseUrl = pathname.replace(baseUrl, "/");
-         const template = path.resolve(baseUrl, page.template);
-         if (excludeBaseUrl === "/") {
-           return template;
-         }
-         if (/\.(bmp|gif|ico|jpg|jpeg|png|js|css|json|html)/.test(excludeBaseUrl.toLowerCase())) {
-           return excludeBaseUrl;
-         }
-         const isApiUrl = proxyUrlKeys.some((item) => pathname.startsWith(path.resolve(baseUrl, item)));
-         return isApiUrl ? excludeBaseUrl : template;
-       }
-     };
-   }
-   ```
-
-3. 音乐播放器的问题
+2. 音乐播放器的问题
 
    音乐播放器使用的是 `vue3-aplayer` 插件，只是在 `vue-aplayer` 插件基础上对 **Vue3** 进行适配，并未解决插件自身的问题。
 
@@ -357,7 +458,7 @@ const collection = {
    >
    > <font color="red">*</font> 此方法对 Vercel 部署的网站无效，后续会思考其他解决方案
 
-4. 音乐自动播放的问题
+3. 音乐自动播放的问题
 
    由于浏览器权限的问题，音乐自动播放会失效，需要在浏览器中添加相关设置解决（以 Edge 浏览器为例）。
 
@@ -368,10 +469,10 @@ const collection = {
 * [Vue](https://cn.vuejs.org/)
 * [Vite](https://vitejs.cn/vite3-cn/)
 * [Pinia](https://pinia.vuejs.org/zh/)
-* [IconPark](https://iconpark.oceanengine.com/official)
 * [xicons](https://xicons.org/)
-* [Aplayer](https://aplayer.js.org/)
 * [Swiper](https://www.swiper.com.cn/)
+* [Aplayer](https://aplayer.js.org/)
+* [IconPark](https://iconpark.oceanengine.com/official)
 
 ### API
 
@@ -382,6 +483,54 @@ const collection = {
 
 ### 更新日志
 
+- 2023-11-05
+
+  `F` 修复了 Safari 浏览器由于动画重复，在关闭 `音乐列表` 时 **屏幕闪烁** 的问题
+
+  `F` 修复了移动端模式下，在 `背景图片展示` 状态，移动端 `菜单按钮` 仍旧显示的问题
+
+  `F` 修复了 720px 宽度时，移动端 `菜单按钮` 不显示的问题
+
+  `F` 修复了 `背景图片展示` 状态，`下载图片` 按钮无法点击的问题
+
+  `F` 修复了 Safari 浏览器 `消息提示` 内容超出容器的问题
+
+  `F` 修复了由 PC 端模式 调整到 移动端模式 后，音乐列表关闭的问题
+
+  <br/>
+
+  `A` 新增了 `加载动画` 组件
+
+  `A` 新增了字体文件
+
+  `A` 新增了部分 `全局变量`
+
+  `A` 新增了部分 `环境变量`
+
+  `A` 新增了自动导入 Vue 相关组件的配置
+
+  `A` 新增了音乐加载失败的方法
+
+  `A` 新增了 `网站列表` 切换功能
+
+  `D` 删除了无用的样式文件
+
+  `U` 修改了网站结构以及样式
+
+  `U` 修改了字体样式文件
+
+  `U` 修改了模块数据结构
+
+  `U` 修改了 `环境变量` 引入方式
+
+  `U` 修改了部分插件版本
+
+  `U` 修改了部分代码，统一编码结构
+
+  `U` 修改了 `背景图片` 加载逻辑
+
+  
+  
 - 2023-07-06
 
   `A` 新增了关于 `更新日志` 的注释
