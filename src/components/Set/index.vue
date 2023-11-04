@@ -1,9 +1,9 @@
 <template>
     <div class="setting">
         <el-collapse class="collapse" v-model="activeName" accordion>
-            <el-collapse-item title="壁纸设置" name="1">
+            <el-collapse-item title="背景设置" name="1">
                 <div class="background-set">
-                    <el-radio-group v-model="backgroundSet" text-color="#FFFFFF">
+                    <el-radio-group v-model="coverType" text-color="#FFFFFF" @change="changeBackground">
                         <el-radio v-for="(item, index) in backgroundApi" :label="index.toString()" size="large" border>{{ item.name }}</el-radio>
                     </el-radio-group>
                 </div>
@@ -34,10 +34,18 @@
                     </el-radio-group>
                 </div>
             </el-collapse-item>
-            <el-collapse-item title="其他设置" name="3">
+            <el-collapse-item title="个性化设置" name="3">
                 <div class="item">
                     <span class="text">建站日期显示</span>
                     <el-switch v-model="siteStartShow" inline-prompt :active-icon="CheckSmall" :inactive-icon="CloseSmall" />
+                </div>
+                <div class="item">
+                    <span class="text">底栏背景模糊</span>
+                    <el-switch v-model="footerBlur" inline-prompt :active-icon="CheckSmall" :inactive-icon="CloseSmall" />
+                </div>
+                <div class="item">
+                    <span class="text">每日一句显示</span>
+                    <el-switch v-model="sentenceState" inline-prompt :active-icon="CheckSmall" :inactive-icon="CloseSmall" />
                 </div>
             </el-collapse-item>
             <el-collapse-item title="其他设置" name="4">
@@ -50,25 +58,23 @@
 <script setup>
     import { CheckSmall, CloseSmall, SuccessPicture, Error } from "@icon-park/vue-next";
     import { mainStore } from "@/store";
-    import { CheckSmall, CloseSmall, Error } from "@icon-park/vue-next";
     import { storeToRefs } from "pinia";
-    import { getLocalData } from "@/api"
+    import { loadData } from "@/api"
 
     const store = mainStore();
-    const { siteStartShow, playerAutoplay, playerShowLrc, playerMutex, playerShuffle, playerRepeat } = storeToRefs(store);
+    const { coverType, siteStartShow, playerAutoplay, playerShowLrc, playerMutex, playerShuffle, playerRepeat, footerBlur, sentenceState } = storeToRefs(store);
 
     // 默认选中项
     let activeName = ref("1");
-    let backgroundSet = ref("0");
 
     // 背景图片接口数据
     let backgroundApi = ref([]);
 
     // 获取背景图片接口数据
-    const getBackgroundData = () => {
-        getLocalData("/data/background.json")
+    const loadBackgroundData = () => {
+        loadData(import.meta.env.VITE_BACKGROUND_URL)
             .then((res) => {
-                backgroundApi.value = res.api;
+                backgroundApi.value = res;
                 console.log(backgroundApi.value);
             })
             .catch((err) => {
@@ -82,20 +88,22 @@
                     }),
                 });
             });
-    }
+    };
+
+    // 背景图片切换
+    const changeBackground = () => {
+        ElMessage({
+            message: "背景图片设置成功，刷新后生效",
+            icon: h(SuccessPicture, {
+                theme: "filled",
+                fill: "#EFEFEF",
+            }),
+        });
+    };
 
     onMounted(() => {
-        getBackgroundData();
-        backgroundSet.value = store.coverType.toString();
+        loadBackgroundData();
     });
-
-    // 壁纸选中项
-    watch(
-        () => backgroundSet.value,
-        (value) => {
-            store.coverType = value;
-        }
-    );
 </script>
 
 <style lang="scss" scoped>
@@ -169,6 +177,10 @@
                         .el-switch__core {
                             background-color: #FFFFFF30;
                             border-color: transparent;
+
+                            .el-icon {
+                                line-height: 0;
+                            }
                         }
 
                         .el-radio-group {

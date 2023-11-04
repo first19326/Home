@@ -8,18 +8,21 @@
             </div>
         </Transition>
         <!-- 一言内容 -->
-        <div class="content" @click="updateHitokoto">
-            <span class="text">{{ hitokotoData.text }}</span>
-            <span class="from">-「&nbsp;{{ hitokotoData.from }}&nbsp;」</span>
-        </div>
+        <Transition name="el-fade-in-linear" mode="out-in">
+            <div class="content" :key="hitokotoData.text" @click="updateHitokoto">
+                <span class="text">{{ hitokotoData.text }}</span>
+                <span class="from">-「&nbsp;{{ hitokotoData.from }}&nbsp;」</span>
+            </div>
+        </Transition>
     </div>
 </template>
 
 <script setup>
     import { MusicMenu, Error } from "@icon-park/vue-next";
     import { getHitokoto } from "@/api";
-    import debounce from "@/utils/debounce.js";
     import { mainStore } from "@/store";
+    import debounce from "@/utils/debounce.js";
+
     const store = mainStore();
 
     // 开启音乐面板按钮显隐
@@ -27,15 +30,12 @@
 
     // 一言数据
     let hitokotoData = reactive({
-        text: "简单地活着，肆意而又精彩。",
-        from: "WorstOne",
+        text: import.meta.env.VITE_HITOKOTO_TEXT,
+        from: import.meta.env.VITE_HITOKOTO_FROM,
     });
 
-    // 打开音乐面板
-    const openMusic = () => {};
-
     // 获取一言数据
-    const getHitokotoData = () => {
+    const loadHitokotoData = () => {
         getHitokoto()
             .then((res) => {
                 hitokotoData.text = res.hitokoto;
@@ -49,21 +49,23 @@
                         fill: "#EFEFEF",
                     }),
                 });
+
+                // 设置默认一言数据
+                hitokotoData.text = import.meta.env.VITE_HITOKOTO_TEXT;
+                hitokotoData.from = import.meta.env.VITE_HITOKOTO_FROM;
             });
     };
 
     // 更新一言数据
     const updateHitokoto = () => {
-        hitokotoData.text = "新的一言正在赶来的路上";
-        hitokotoData.from = "来源加载中";
         // 防抖
         debounce(() => {
-            getHitokotoData();
+            loadHitokotoData()
         }, 500);
     };
 
     onMounted(() => {
-        getHitokotoData();
+        loadHitokotoData();
     });
 </script>
 
@@ -72,8 +74,7 @@
         width: 100%;
         height: 100%;
         padding: 20px;
-        animation: fade;
-        -webkit-animation: fade 0.5s;
+        animation: fade 0.5s;
 
         .open-music {
             display: flex;

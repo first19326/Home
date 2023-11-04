@@ -26,37 +26,9 @@
         if ( /*@cc_on!@*/ false || (!!window.MSInputMethodContext && !!document.documentMode))
             window.location.href = "https://support.dmeng.net/upgrade-your-browser.html?referrer=" + encodeURIComponent(window.location.href);
     </script>
-    <% if (count) { %>
-    <!-- 百度统计 -->
-    <script>
-        var _hmt = _hmt || [];
-        (function () {
-            var hm = document.createElement("script");
-            hm.src = "https://hm.baidu.com/hm.js?<%- count %>";
-            var s = document.getElementsByTagName("script")[0];
-            s.parentNode.insertBefore(hm, s);
-        })();
-    </script>
-    <% } %>
 </head>
 
-<body class="loading">
-    <!--加载动画-->
-    <div id="loading-box">
-        <div class="loading-left-background"></div>
-        <div class="loading-right-background"></div>
-        <div class="spinner-box">
-            <div class="loader">
-                <div class="inner one"></div>
-                <div class="inner two"></div>
-                <div class="inner three"></div>
-            </div>
-            <div class="loading-word">
-                <p class="loading-title" id="loading-title"><%- title %></p>
-                <span id="loading-text">加载中</span>
-            </div>
-        </div>
-    </div>
+<body>
     <!-- 主体内容 -->
     <div id="app"></div>
     <!-- noscript -->

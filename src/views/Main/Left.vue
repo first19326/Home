@@ -16,8 +16,8 @@
     .left {
         // flex: 1 0 0%;
         margin-right: 10px;
-        margin-bottom: 45px;
         width: 50%;
+        transform: translateY(30px);
 
         &.hidden {
             display: none;
@@ -26,6 +26,7 @@
         @media (max-width: 720px) {
             margin-right: 0;
             width: 100%;
+            transform: translateY(0);
         }
     }
 </style>

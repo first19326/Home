@@ -33,36 +33,28 @@
     });
 
     // 获取天气数据
-    const getWeatherData = () => {
+    const loadWeatherData = () => {
         // 获取地理位置信息
         if (!mainKey) return onError("请配置天气 Key");
         getAdcode(mainKey)
             .then((res) => {
-                if (res.status) {
-                    weatherData.adCode = {
-                        city: res.city,
-                        adcode: res.adcode,
-                    };
-                    // 获取天气信息
-                    getWeather(mainKey, weatherData.adCode.adcode)
-                        .then((res) => {
-                            if (res.status) {
-                                weatherData.weather = {
-                                    weather: res.lives[0].weather,
-                                    temperature: res.lives[0].temperature,
-                                    winddirection: res.lives[0].winddirection,
-                                    windpower: res.lives[0].windpower,
-                                };
-                            } else {
-                                onError("天气信息获取失败");
-                            }
-                        })
-                        .catch(() => {
-                            onError("天气信息获取失败");
-                        });
-                } else {
-                    onError("地理位置获取失败");
-                }
+                weatherData.adCode = {
+                    city: res.city,
+                    adcode: res.adcode,
+                };
+                // 获取天气信息
+                getWeather(mainKey, weatherData.adCode.adcode)
+                    .then((res) => {
+                        weatherData.weather = {
+                            weather: res.lives[0].weather,
+                            temperature: res.lives[0].temperature,
+                            winddirection: res.lives[0].winddirection,
+                            windpower: res.lives[0].windpower,
+                        };
+                    })
+                    .catch(() => {
+                        onError("天气信息获取失败");
+                    });
             })
             .catch(() => {
                 onError("地理位置获取失败");
@@ -83,6 +75,6 @@
 
     onMounted(() => {
         // 调用获取天气
-        getWeatherData();
+        loadWeatherData();
     });
 </script>

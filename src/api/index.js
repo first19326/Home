@@ -76,14 +76,8 @@ export const getWeather = async (key, city) => {
  * 获取配置
  */
 
-// 获取本地数据
-export const getLocalData = async (url) => {
+// 加载数据（外部接口需要配置跨域）
+export const loadData = async (url) => {
     const res = await fetch(url);
     return await res.json();
 };
-
-// 获取社交链接
-// export const getSocialLinks = async () => {
-//     const res = await fetch("/data/socialLinks.json");
-//     return await res.json();
-// };

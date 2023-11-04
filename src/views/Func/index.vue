@@ -2,7 +2,7 @@
     <!-- 功能区域 -->
     <div class="function">
         <el-row :gutter="20">
-            <Swiper :modules="[Pagination]" :slides-per-view="store.innerWidth > 910 ? 2 : 1" :enable="swiperSwitch" :noSwiping="true" :noSwipingClass="`el-slider`" :touchStartPreventDefault="false" :edgeSwipeDetection="true" :space-between="20" :pagination="{ el: '.swiper-pagination', bulletElement: 'div', renderBullet: changeBullet }">
+            <Swiper :modules="[Pagination]" :slides-per-view="store.innerWidth > 910 ? 2 : 1" :noSwiping="true" :noSwipingClass="`el-slider`" :touchStartPreventDefault="false" :edgeSwipeDetection="true" :space-between="20" :pagination="{ el: '.swiper-pagination', bulletElement: 'div', renderBullet: changeBullet }">
                 <SwiperSlide>
                     <el-col :span="24">
                         <div class="right cards">
@@ -25,54 +25,14 @@
                     <el-col :span="24">
                         <div class="left">
                             <Hitokoto />
-                            <!-- 音乐控制面板 -->
-                            <div class="music cards" @mouseenter="volumeShow = true" @mouseleave="volumeShow = false" v-show="store.musicOpenState">
-                                <div class="btns">
-                                    <span @click="musicListShow">音乐列表</span>
-                                    <span @click="store.musicOpenState = false">回到一言</span>
-                                </div>
-                                <div class="control">
-                                    <GoStart theme="filled" size="30" fill="#EFEFEF" @click="changeMusicIndex(0)" />
-                                    <div class="state" @click="changePlayState">
-                                        <PlayOne theme="filled" size="50" fill="#EFEFEF" v-show="!store.playerState" />
-                                        <Pause theme="filled" size="50" fill="#EFEFEF" v-show="store.playerState" />
-                                    </div>
-                                    <GoEnd theme="filled" size="30" fill="#EFEFEF" @click="changeMusicIndex(1)" />
-                                </div>
-                                <div class="menu">
-                                    <div class="name" v-show="!volumeShow">
-                                        <span>{{ store.getPlayerData.name ? store.getPlayerData.name + " - " + store.getPlayerData.artist : "未播放音乐" }}</span>
-                                    </div>
-                                    <div class="volume" v-show="volumeShow">
-                                        <div class="icon" @click="onMuted">
-                                            <VolumeMute theme="filled" size="24" fill="#EFEFEF" v-show="muted || volumeNum == 0"  />
-                                            <VolumeSmall theme="filled" size="24" fill="#EFEFEF" v-show="!muted && volumeNum > 0 && volumeNum < 0.7"  />
-                                            <VolumeNotice theme="filled" size="24" fill="#EFEFEF" v-show="!muted && volumeNum >= 0.7" />
-                                        </div>
-                                        <el-slider v-model="volumeNum" :show-tooltip="false" :min="0" :max="1" :step="0.01" />
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- END -->
+                            <Player />
                         </div>
                     </el-col>
                 </SwiperSlide>
-                <div v-show="swiperSwitch" class="pagination-wrapper">
+                <div class="pagination-wrapper" v-show="store.innerWidth <= 910">
                     <div class="swiper-pagination"></div>
                 </div>
             </Swiper>
-            <!-- 音乐列表弹窗 -->
-            <Transition name="fade">
-                <div class="music-list" v-show="store.musicListShow" @click="store.musicListShow = false">
-                    <Transition name="zoom">
-                        <div class="list" v-show="store.musicListShow" @click.stop>
-                            <CloseOne class="close" theme="filled" size="28" fill="#FFFFFF60" @click="store.musicListShow = false" />
-                            <Player :autoplay="store.playerAutoplay" :showLrc="store.playerShowLrc" :mutex="store.playerMutex" :shuffle="store.playerShuffle" :repeat="store.playerRepeat" :volume="volumeNum" ref="playerRef" />
-                        </div>
-                    </Transition>
-                </div>
-            </Transition>
-            <!-- END -->
         </el-row>
     </div>
 </template>
@@ -82,22 +42,22 @@
     import Weather from "@/components/Weather/index.vue";
     import Player from "@/components/Player/index.vue";
 
-    import { Swiper, SwiperSlide } from 'swiper/vue';
-    import { Pagination } from 'swiper';
-    import 'swiper/scss'
+    import { getCurrentTime } from "@/utils/getTime";
+
+    import { Swiper, SwiperSlide } from "swiper/vue";
+    import { Pagination } from "swiper";
+    import "swiper/scss"
 
     import { mainStore } from "@/store";
     const store = mainStore();
-
-    let swiperSwitch = ref(false);
 
     // 当前时间
     let currentTime = ref({});
     let timeInterval = null;
 
-    // 页面宽度
-    const getWidth = () => {
-        store.setInnerWidth(window.innerWidth);
+    // 更新时间
+    const updateTimeData = () => {
+        currentTime.value = getCurrentTime();
     };
 
     const changeBullet = (index, className) => {
@@ -105,91 +65,13 @@
     };
 
     onMounted(() => {
-        timeInterval = setInterval(() => {
-            currentTime.value = getCurrentTime();
-        }, 1000);
-
-        // 监听当前页面宽度
-        getWidth();
-        window.addEventListener("resize", getWidth);
-
-        // 键盘事件
-        window.addEventListener("keydown", (e) => {
-            // 空格键事件
-            if (e.code == "Space") {
-                changePlayState();
-            }
-
-            // CTRL + <—— 事件
-            if (e.ctrlKey && e.code == "ArrowLeft") {
-                changeMusicIndex(0);
-            }
-
-            // CTRL + ——> 事件
-            if (e.ctrlKey && e.code == "ArrowRight") {
-                changeMusicIndex(1);
-            }
-        });
+        updateTimeData();
+        timeInterval = setInterval(updateTimeData, 1000);
     });
 
     onBeforeUnmount(() => {
         clearInterval(timeInterval);
-        window.removeEventListener("resize", getWidth);
     });
-
-    // 监听宽度变化
-    watch(
-        () => store.innerWidth,
-        (value) => {
-            if (value > 910) {
-                swiperSwitch = false;
-            } else {
-                swiperSwitch = true;
-            }
-        }
-    );
-
-
-    // 静音状态
-    let muted = ref(false);
-
-    // 音量条数据
-    let volumeShow = ref(false);
-    let volumeNum = ref(store.musicVolume ? store.musicVolume : 0.7);
-
-    // 播放列表数据
-    const playerRef = ref(null);
-
-    // 展开音乐列表
-    const musicListShow = () => {
-        store.musicListShow = true;
-        playerRef.value.scrollTopMusic();
-    }
-
-    // 音乐播放暂停
-    const changePlayState = () => {
-        playerRef.value.playToggle();
-    };
-
-    // 音乐上下曲
-    const changeMusicIndex = (type) => {
-        playerRef.value.changeMusic(type);
-    };
-
-    // 静音
-    const onMuted = () => {
-        muted.value = !muted.value;
-        playerRef.value.onMuted(muted.value);
-    }
-
-    // 监听音量变化
-    watch(
-        () => volumeNum.value,
-        (value) => {
-            store.musicVolume = value;
-            playerRef.value.changeVolume(store.musicVolume);
-        }
-    );
 </script>
 
 <style lang="scss" scoped>
@@ -205,95 +87,22 @@
         .el-row {
             margin: 0 !important;
             width: 100%;
-            height: 100%;
-
-            .music-list {
-                position: fixed;
-                top: 0;
-                left: 0;
-                margin: auto;
-                width: 100%;
-                height: 100%;
-                background-color: #00000080;
-                backdrop-filter: blur(20px);
-                -webkit-backdrop-filter: blur(20px);
-                z-index: 1;
-
-                .list {
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    position: absolute;
-                    top: calc(50% - 300px);
-                    left: calc(50% - 320px);
-                    width: 640px;
-                    height: 600px;
-                    background-color: #FFFFFF66;
-                    border-radius: 6px;
-                    z-index: 999;
-
-                    @media (max-width: 720px) {
-                        left: calc(50% - 45%);
-                        width: 90%;
-                    }
-
-                    .close {
-                        display: block;
-                        position: absolute;
-                        top: 12px;
-                        right: 12px;
-                        width: 28px;
-                        height: 28px;
-
-                        &:hover {
-                            transform: scale(1.2);
-                        }
-
-                        &:active {
-                            transform: scale(0.95);
-                        }
-                    }
-                }
-            }
-
-            // 弹窗动画
-            .fade-enter-active {
-                animation: fade 0.3s ease-in-out;
-                -webkit-animation: fade 0.3s ease-in-out;
-            }
-
-            .fade-leave-active {
-                animation: fade 0.3s ease-in-out reverse;
-                -webkit-animation: fade 0.3s ease-in-out reverse;
-            }
-
-            .zoom-enter-active {
-                animation: zoom 0.4s ease-in-out;
-                -webkit-animation: zoom 0.4s ease-in-out; 
-            }
-
-            .zoom-leave-active {
-                animation: zoom 0.3s ease-in-out reverse;
-                -webkit-animation: zoom 0.3s ease-in-out reverse;
-            }
-
-            @keyframes zoom {
-                0% {
-                    opacity: 0;
-                    transform: scale(0) translateY(-600px);
-                }
-
-                100% {
-                    opacity: 1;
-                    transform: scale(1) translateY(0);
-                }
-            }
+            height: 100%;  
 
             .swiper {
                 left: 0;
                 margin: -5px auto;
                 padding: 5px 10px !important;
+                width: 100%;
                 z-index: 0 !important;
+
+                :deep(.swiper-slide) {
+                    width: calc((100% - 20px) / 2) !important;
+
+                    @media (max-width: 910px) {
+                        width: 100% !important;
+                    }
+                }
 
                 .pagination-wrapper {
                     display: flex;
@@ -308,136 +117,26 @@
                         border-radius: 12px;
                         font-size: 0;
                         transition: .25s;
-                    }
-                }
 
-                .swiper-wrapper {
-
-                    .music {
-                        display: flex;
-                        flex-direction: column;
-                        justify-content: space-between;
-                        align-items: center;
-                        padding: 20px;
-                        width: 100%;
-                        height: 100%;
-                        background: #00000040;
-                        backdrop-filter: blur(10px);
-                        -webkit-backdrop-filter: blur(10px);
-                        border-radius: 6px;
-                        animation: fade;
-                        -webkit-animation: fade 0.5s;
-                        
-                        .btns {
-                            display: flex;
-                            align-items: center;
-                            margin-bottom: 6px;
+                        :deep(.swiper-pagination-bullet) {
+                            display: inline-block;
+                            padding: 3px 3px;
 
                             span {
-                                margin: 0px 6px;
-                                padding: 2px 8px;
-                                background: #FFFFFF26;
-                                border-radius: 6px;
-                                overflow-x: hidden;
-                                white-space: nowrap;
-                                text-overflow: ellipsis;
-
-                                &:hover {
-                                    background: #FFFFFF4D;
-                                }
-                            }
-                        }
-
-                        .control {
-                            display: flex;
-                            flex-direction: row;
-                            align-items: center;
-                            justify-content: space-evenly;
-                            width: 100%;
-
-                            .state {
-                                .i-icon {
-                                    display: block;
-                                    width: 50px;
-                                    height: 50px;
-                                }
+                                display: block;
+                                width: 4px;
+                                height: 4px;
+                                background-color: rgba(0, 0, 0, 0.2509803922);
+                                border-radius: 2px;
+                                transition: .25s;
                             }
 
-                            .i-icon {
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                                width: 36px;
-                                height: 36px;
-                                border-radius: 6px;
-                                transform: scale(1);
-
-                                &:hover {
-                                    background: #FFFFFF33;
-                                }
-
-                                &:active {
-                                    transform: scale(0.95);
-                                }
-                            }
-                        }
-
-                        .menu {
-                            display: flex;
-                            flex-direction: column;
-                            align-items: center;
-                            justify-content: center;
-                            width: 100%;
-                            height: 26px;
-                            line-height: 26px;
-                            
-                            .name {
-                                width: 100%;
-                                text-align: center;
-                                overflow-x: hidden;
-                                white-space: nowrap;
-                                text-overflow: ellipsis;
-                                animation: fade;
-                                -webkit-animation: fade 0.3s;
+                            &:hover span {
+                                background-color: rgba(255, 255, 255, 0.2509803922);
                             }
 
-                            .volume {
-                                display: flex;
-                                flex-direction: row;
-                                align-items: center;
-                                padding: 0 12px;
-                                width: 100%;
-                                animation: fade;
-                                -webkit-animation: fade 0.3s;
-
-                                .icon {
-                                    margin-right: 12px;
-                                    transform: scale(1);
-
-                                    &:active {
-                                        transform: scale(0.95);
-                                    }
-                                    
-                                    span {
-                                        display: block;
-                                        width: 24px;
-                                        height: 24px;
-                                    }
-                                }
-
-                                :deep(*) {
-                                    transition: none;
-                                }
-
-                                :deep(.el-slider__button) {
-                                    transition: 0.3s;
-                                }
-
-                                .el-slider {
-                                    --el-slider-main-bg-color: #EFEFEF;
-                                    --el-slider-runway-bg-color: #FFFFFF40;
-                                    --el-slider-button-size: 16px;
-                                }
+                            &:active span, &.swiper-pagination-bullet-active span {
+                                background-color: rgba(255, 255, 255, 1);
                             }
                         }
                     }
@@ -468,8 +167,7 @@
                 align-items: center;
                 justify-content: space-between;
                 padding: 20px;
-                animation: fade;
-                -webkit-animation: fade 0.5s;
+                animation: fade 0.5s;
 
                 .time {
                     font-size: 1.1rem;

@@ -19,8 +19,8 @@
     let socialTip = ref("通过这里联系我吧");
 
     // 获取社交链接数据
-    const getSocialLinksData = () => {
-        getLocalData("/data/socialLinks.json")
+    const loadSocialLinksData = () => {
+        loadData(import.meta.env.VITE_SOCIAL_URL)
             .then((res) => {
                 socialLinksData.value = res;
                 console.log(socialLinksData.value);
@@ -39,7 +39,7 @@
     };
 
     onMounted(() => {
-        getSocialLinksData();
+        loadSocialLinksData();
     });
 </script>
 
@@ -54,11 +54,11 @@
         max-width: 460px;
         background-color: transparent;
         backdrop-filter: blur(0);
-        -webkit-backdrop-filter: blur(0);
         border-radius: 6px;
-        transition: all 0.5s;
-        animation: fade;
-        -webkit-animation: fade 0.5s;
+        animation: fade 0.5s;
+        transition:
+            background-color 0.3s,
+            backdrop-filter 0.3s;
         
         @media (max-width: 840px) {
             justify-content: center;
@@ -84,10 +84,13 @@
 
                 .icon {
                     margin: 0 12px;
-                    transition: all 0.3s;
+                    transition: transform 0.3s;
 
+                    &:hover {
+                        transform: scale(1.1);
+                    }
                     &:active {
-                        transform: scale(0.9);
+                        transform: scale(1);
                     }
                 }
             }
@@ -96,15 +99,13 @@
         .tip {
             display: none;
             margin-right: 12px;
-            animation: fade;
-            -webkit-animation: fade 0.5s;
+            animation: fade 0.5s;
         }
 
         @media (min-width: 768px) {
             &:hover {
                 background-color: #00000040;
                 backdrop-filter: blur(5px);
-                -webkit-backdrop-filter: blur(5px);
 
                 .tip {
                     display: block;

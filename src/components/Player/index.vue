@@ -1,5 +1,33 @@
 <template>
-    <aplayer ref="player" v-if="playList[0]" :music="playList[playIndex]" :list="playList" :autoplay="autoplay" :showLrc="showLrc" :mutex="mutex" :shuffle="shuffle" :repeat="repeat" :volume="volume" :theme="theme" :listMaxHeight="listMaxHeight" :listFolded="listFolded" @play="onPlay" @pause="onPause" @timeupdate="onTimeUp" @onSelectMusic="onSelectMusic" />
+    <!-- 音乐控制面板 -->
+    <div class="music cards" @mouseenter="volumeShow = true" @mouseleave="volumeShow = false" v-show="store.musicOpenState">
+        <div class="btns">
+            <span @click="store.musicListShow = true">音乐列表</span>
+            <span @click="store.musicOpenState = false">回到一言</span>
+        </div>
+        <div class="control">
+            <GoStart theme="filled" size="30" fill="#EFEFEF" @click="store.musicIndex = -1" />
+            <div class="state" @click="store.playerToggle = !store.playerToggle">
+                <PlayOne theme="filled" size="50" fill="#EFEFEF" v-show="!store.playerState" />
+                <Pause theme="filled" size="50" fill="#EFEFEF" v-show="store.playerState" />
+            </div>
+            <GoEnd theme="filled" size="30" fill="#EFEFEF" @click="store.musicIndex = 1" />
+        </div>
+        <div class="menu">
+            <div class="name" v-show="!volumeShow">
+                <span>{{ store.getPlayerData.name ? store.getPlayerData.name + " - " + store.getPlayerData.artist : "未播放音乐" }}</span>
+            </div>
+            <div class="volume" v-show="volumeShow">
+                <div class="icon" @click="store.musicMuted = !store.musicMuted">
+                    <VolumeMute theme="filled" size="24" fill="#EFEFEF" v-show="store.musicMuted || volumeNum == 0"  />
+                    <VolumeSmall theme="filled" size="24" fill="#EFEFEF" v-show="!store.musicMuted && volumeNum > 0 && volumeNum < 0.7"  />
+                    <VolumeNotice theme="filled" size="24" fill="#EFEFEF" v-show="!store.musicMuted && volumeNum >= 0.7" />
+                </div>
+                <el-slider v-model="volumeNum" :show-tooltip="false" :min="0" :max="1" :step="0.01" />
+            </div>
+        </div>
+    </div>
+    <!-- END -->
 </template>
 <script setup>
     import { GoStart, PlayOne, Pause, GoEnd, VolumeMute, VolumeSmall, VolumeNotice } from "@icon-park/vue-next";
@@ -7,301 +35,166 @@
     import { mainStore } from "@/store";
     const store = mainStore();
 
-    // 获取播放器 DOM
-    const player = ref(null);
+    // 音量条数据
+    let volumeShow = ref(false);
+    let volumeNum = ref(store.musicVolume ? store.musicVolume : 0.7);
 
-    // 歌曲播放列表
-    let playList = ref([]);
-    let playerLrc = ref("");
+    // 键盘事件
+    const keydownEvent = (e) => {
+        // 空格键事件
+        if (e.code == "Space") {
+            store.playerToggle = !store.playerToggle;
+        }
 
-    // 歌曲播放项
-    let playIndex = ref(0);
-    let playListCount = ref(0);
+        // CTRL + <—— 事件
+        if (e.ctrlKey && e.code == "ArrowLeft") {
+            store.musicIndex = -1;
+        }
 
-    // 配置项
-    const props = defineProps({
-        // 音频自动播放
-        autoplay: {
-            type: Boolean,
-            default: false,
-        },
-        // 是否显示歌词
-        showLrc: {
-            type: Boolean,
-            default: true,
-        },
-        // 是否在该播放器播放时暂停其他播放器
-        mutex: {
-            type: Boolean,
-            default: true,
-        },
-        // 随机播放
-        shuffle: {
-            type: Boolean,
-            default: false,
-        },
-        // 音频循环播放
-        repeat: {
-            type: String,
-            default: "list", // 'list' | 'music' | 'none'
-        },
-        // 默认音量
-        volume: {
-            type: Number,
-            default: 0.7,
-            validator: (value) => {
-                return value >= 0 && value <= 1;
-            },
-        },
-        // 主题色
-        theme: {
-            type: String,
-            default: "#EFEFEF",
-        },
-        // 列表是否默认折叠
-        listFolded: {
-            type: Boolean,
-            default: false,
-        },
-        // 列表最大高度
-        listMaxHeight: {
-            type: String,
-            default: "420px",
-        },
-    });
+        // CTRL + ——> 事件
+        if (e.ctrlKey && e.code == "ArrowRight") {
+            store.musicIndex = 1;
+        }
+    };
 
     onMounted(() => {
-        getMusicData();
+        window.addEventListener("keydown", keydownEvent);
     });
 
-    // 获取音乐数据
-    const getMusicData = () => {
-        getLocalData("/data/music.json")
-            .then((res) => {
-                console.log(res);
-                initMusic(res);
-            })
-            .catch((err) => {
-                console.error(err);
-                ElMessage({
-                    message: "音乐相关数据获取失败",
-                    grouping: true,
-                    icon: h(Error, {
-                        theme: "filled",
-                        fill: "#EFEFEF",
-                    }),
-                });
-            });
-    }
+    onBeforeUnmount(() => {
+        window.removeEventListener("keydown", keydownEvent);
+    });
 
-    // 初始化播放器
-    const initMusic = (music) => {
-        nextTick(() => {
-            try {
-                getPlayerList(music.api || 'https://api.i-meto.com/meting/api/', music.server || 'netease', music.type || 'playlist', music.id || '3778678')
-                    .then((res) => {
-                        console.log(res);
-                        // 生成歌单信息
-                        playIndex.value = Math.floor(Math.random() * res.length);
-                        playListCount.value = res.length;
-                        // 更改播放器加载状态
-                        store.musicIsOk = true;
-                        // 生成歌单
-                        res.forEach((v) => {
-                            playList.value.push({
-                                title: v.name || v.title,
-                                artist: v.artist || v.author,
-                                src: v.url || v.src,
-                                pic: v.pic,
-                                lrc: v.lrc,
-                            });
-                        });
-                        console.log(
-                            "音乐加载完成",
-                            playList.value,
-                            playIndex.value,
-                            playListCount.value,
-                            props.volume
-                        );
-                    }
-                );
-            } catch (err) {
-                console.error(err);
-                store.musicIsOk = false;
-                ElMessage({
-                    message: "播放器加载失败",
-                    grouping: true,
-                    icon: h(PlayWrong, {
-                        theme: "filled",
-                        fill: "#EFEFEF",
-                    }),
-                });
-            }
-        });
-    };
-
-    // 播放暂停事件
-    const onPlay = () => {
-        console.log("播放");
-        // 播放状态
-        store.setPlayerState(player.value.audio.paused);
-        // 储存播放器信息
-        store.setPlayerData(
-            player.value.currentMusic.title,
-            player.value.currentMusic.artist
-        );
-        scrollMusic();
-        ElMessage({
-            message: store.getPlayerData.name + " - " + store.getPlayerData.artist,
-            grouping: true,
-            icon: h(MusicOne, {
-                theme: "filled",
-                fill: "#EFEFEF",
-            }),
-        });
-    };
-    const onPause = () => {
-        store.setPlayerState(player.value.audio.paused);
-    };
-
-    // 音频时间更新事件
-    const onTimeUp = () => {
-        if (store.playerShowLrc) {
-            let playerRef = player.value.$.vnode.el;
-            if (playerRef) {
-                playerLrc.value = playerRef.getElementsByClassName("aplayer-lrc-current")[0].innerHTML;
-                store.setPlayerLrc(playerLrc.value);
-            }
+    // 监听音量变化
+    watch(
+        () => volumeNum.value,
+        (value) => {
+            store.musicVolume = value;
+            value == 0 ? store.musicMuted = true : store.musicMuted = false;
         }
-    };
-
-    // 切换播放暂停事件
-    const playToggle = () => {
-        player.value.toggle();
-    };
-
-    // 切换音量事件
-    const changeVolume = (value) => {
-        player.value.audio.volume = value;
-    };
-
-    // 切换静音状态
-    const onMuted = (value) => {
-        player.value.audio.muted = value;
-    }
-
-    const onSelectMusic = (val) => {
-        console.log(val);
-    };
-
-    // 切换上下曲
-    const changeMusic = (type) => {
-        type === 1 ? player.value.nextMusic() : player.value.prevMusic();
-    };
-
-    // 当前播放音乐置顶显示
-    const scrollMusic = () => {
-        if (store.musicListShow) {
-            let index = playList.value.indexOf(player.value.currentMusic);
-            let musicList = player.value.$.vnode.el.querySelector('.aplayer-list ol');
-            smoothScroll(index * 33, 500, null, musicList);
-        }
-    }
-
-    const scrollTopMusic = () => {
-        let index = playList.value.indexOf(player.value.currentMusic);
-        let musicList = player.value.$.vnode.el.querySelector('.aplayer-list ol');
-        nextTick(() => {
-            musicList.scrollTop = index * 33;
-        });
-    }
-
-    // 暴露子组件方法
-    defineExpose({ playToggle, onMuted, changeVolume, changeMusic, scrollTopMusic });
+    );
 </script>
-
 <style lang="scss" scoped>
-    .aplayer {
-        width: 80%;
-        background: transparent;
+    .music {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
+        width: 100%;
+        height: 100%;
+        background: #00000040;
+        backdrop-filter: blur(10px);
         border-radius: 6px;
+        animation: fade 0.5s;
+        
+        .btns {
+            display: flex;
+            align-items: center;
+            margin-bottom: 6px;
 
-        :deep(.aplayer-body) {
-            .aplayer-pic {
-                display: none;
-            }
+            span {
+                margin: 0px 6px;
+                padding: 2px 8px;
+                background: #FFFFFF26;
+                border-radius: 6px;
+                overflow-x: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
 
-            .aplayer-info {
-                margin-left: 0;
-                background-color: #FFFFFF40;
-                border-color: transparent !important;
-
-                .aplayer-music {
-                    flex-grow: initial;
-                    margin-bottom: 2px;
-                    overflow: hidden;
-
-                    .aplayer-title {
-                        margin-right: 6px;
-                        font-size: 16px;
-                    }
-
-                    .aplayer-author {
-                        color: #EFEFEF;
-                    }
-                }
-
-                .aplayer-lrc {
-                    margin: 4px 0 6px 6px;
-                    height: 44px;
-                    text-align: left;
-                    mask: linear-gradient(#FFF 15%, #FFF 85%, hsla(0deg, 0%, 100%, 0.6) 90%, hsla(0deg, 0%, 100%, 0));
-                    -webkit-mask: linear-gradient(#FFF 15%, #FFF 85%, hsla(0deg, 0%, 100%, 0.6) 90%, hsla(0deg, 0%, 100%, 0));
-
-                    &::before, &::after {
-                        display: none;
-                    }
-
-                    p {
-                        color: #EFEFEF;
-                    }
-
-                    .aplayer-lrc-current {
-                        margin-bottom: 4px !important;
-                        font-size: 0.95rem;
-                    }
-                }
-
-                .aplayer-controller {
-                    display: none;
+                &:hover {
+                    background: #FFFFFF4D;
                 }
             }
         }
 
-        :deep(.aplayer-list) {
-            margin-top: 6px;
+        .control {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-evenly;
+            width: 100%;
 
-            ol {
-                &::-webkit-scrollbar-track {
-                    background-color: transparent;
+            .state {
+                .i-icon {
+                    display: block;
+                    width: 50px;
+                    height: 50px;
+                }
+            }
+
+            .i-icon {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 36px;
+                height: 36px;
+                border-radius: 6px;
+                transform: scale(1);
+
+                &:hover {
+                    background: #FFFFFF33;
                 }
 
-                li {
-                    border-color: transparent;
+                &:active {
+                    transform: scale(0.95);
+                }
+            }
+        }
 
-                    &.aplayer-list-light {
-                        background: #FFFFFF40;
-                        border-radius: 6px;
-                    }
+        .menu {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 26px;
+            line-height: 26px;
+            
+            .name {
+                width: 100%;
+                text-align: center;
+                overflow-x: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                animation: fade 0.3s;
+            }
 
-                    &:hover {
-                        background: #FFFFFF26 !important;
-                        border-radius: 6px !important;
-                    }
+            .volume {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                padding: 0 12px;
+                width: 100%;
+                animation: fade 0.3s;
 
-                    .aplayer-list-index, .aplayer-list-author {
-                        color: #EFEFEF;
+                .icon {
+                    margin-right: 12px;
+                    transform: scale(1);
+
+                    &:active {
+                        transform: scale(0.95);
                     }
+                    
+                    span {
+                        display: block;
+                        width: 24px;
+                        height: 24px;
+                    }
+                }
+
+                :deep(*) {
+                    transition: none;
+                }
+
+                :deep(.el-slider__button) {
+                    transition: 0.3s;
+                }
+
+                .el-slider {
+                    --el-slider-main-bg-color: #EFEFEF;
+                    --el-slider-runway-bg-color: #FFFFFF40;
+                    --el-slider-button-size: 16px;
                 }
             }
         }

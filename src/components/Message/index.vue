@@ -3,7 +3,7 @@
     <div class="message">
         <!-- Logo -->
         <div class="logo">
-            <img class="logo-img" :src="siteLogo" alt="logo" />
+            <img class="logo-image" :src="siteLogo" alt="logo" />
             <div class="name text-hidden">
                 <span class="site-name">{{ siteName }}</span>
             </div>
@@ -46,9 +46,6 @@
         text: import.meta.env.VITE_DESC_TEXT,
     });
 
-    // 每日一句
-    let dailySentenceEnable = JSON.parse(import.meta.env.VITE_SENTENCE_ENABLE);
-
     let dailySentence = reactive({
         content: import.meta.env.VITE_DESC_HELLO,
         note: import.meta.env.VITE_DESC_TEXT,
@@ -56,7 +53,7 @@
 
     // 切换右侧功能区
     const changeBox = () => {
-        if (store.getInnerWidth >= 990) {
+        if (store.getInnerWidth > 990) {
             store.boxOpenState = !store.boxOpenState;
         } else {
             ElMessage({
@@ -71,7 +68,7 @@
     };
 
     // 获取每日一句
-    const getDailySentenceData = () => {
+    const loadDailySentenceData = () => {
         getDailySentence(getNowFormatDate())
             .then((res) => {
                 if (res.errno === 0) {
@@ -79,36 +76,48 @@
                     dailySentence.note = res.note;
 
                     // 设置简介区域文字为每日一句
-                    descriptionText.hello = dailySentence.content;
-                    descriptionText.text = dailySentence.note;
+                    if (store.sentenceState) {
+                        descriptionText.hello = dailySentence.content;
+                        descriptionText.text = dailySentence.note;
+                    }
                 }
             })
             .catch(() => {
                 ElMessage({
                     message: "每日一句获取失败",
                     icon: h(Error, {
-                    theme: "filled",
-                    fill: "#EFEFEF",
+                        theme: "filled",
+                        fill: "#EFEFEF",
                     }),
                 });
             });
     };
 
+    // 设置简介区域文字
+    const setDescriptionText = () => {
+        if (store.boxOpenState) {
+            descriptionText.hello = import.meta.env.VITE_DESC_HELLO_OTHER;
+            descriptionText.text = import.meta.env.VITE_DESC_TEXT_OTHER;
+        } else {
+            if (store.sentenceState) {
+                descriptionText.hello = dailySentence.content;
+                descriptionText.text = dailySentence.note;
+            } else {
+                descriptionText.hello = import.meta.env.VITE_DESC_HELLO;
+                descriptionText.text = import.meta.env.VITE_DESC_TEXT;
+            }
+        }
+    };
+
     onMounted(() => {
-        if (dailySentenceEnable) getDailySentenceData();
+        loadDailySentenceData();
     });
 
     // 监听状态变化
     watch(
-        () => store.boxOpenState,
-        (value) => {
-            if (value) {
-                descriptionText.hello = import.meta.env.VITE_DESC_HELLO_OTHER;
-                descriptionText.text = import.meta.env.VITE_DESC_TEXT_OTHER;
-            } else {
-                descriptionText.hello = dailySentence.content;
-                descriptionText.text = dailySentence.note;
-            }
+        () => [store.boxOpenState, store.sentenceState],
+        () => {
+            setDescriptionText();
         }
     );
 </script>
@@ -120,10 +129,9 @@
             display: flex;
             flex-direction: row;
             align-items: center;
-            animation: fade;
-            -webkit-animation: fade 0.5s;
+            animation: fade 0.5s;
 
-            .logo-img {
+            .logo-image {
                 width: 120px;
                 border-radius: 50%;
 
@@ -168,8 +176,7 @@
             max-width: 460px;
             margin-top: 3.5rem;
             padding: 1rem;
-            animation: fade;
-            -webkit-animation: fade 0.5s;
+            animation: fade 0.5s;
 
             .content {
                 display: flex;
@@ -202,7 +209,7 @@
             .logo {
                 flex-direction: column;
 
-                .logo-img {
+                .logo-image {
                     display: none;
                 }
 

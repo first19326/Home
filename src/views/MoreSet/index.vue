@@ -1,7 +1,7 @@
 <template>
     <div class="set" @mouseenter="closeShow = true" @mouseleave="closeShow = false" @click.stop>
         <Transition name="el-fade-in-linear">
-            <CloseOne class="close" theme="filled" size="28" fill="#FFFFFF60" v-show="closeShow" @click="closeMoreSet" />
+            <CloseOne class="close" theme="filled" size="28" fill="#FFFFFF60" v-show="closeShow" @click="store.setOpenState = false" />
         </Transition>
         <el-row :gutter="40">
             <el-col :span="12" class="left">
@@ -49,7 +49,7 @@
 
 <script setup>
     import { CloseOne, SettingTwo, GithubOne, Bug, AddOne, ReduceOne, Redo, Error } from "@icon-park/vue-next";
-    import { getLocalData } from "@/api";
+    import { loadData } from "@/api";
     import { mainStore } from "@/store";
     import Set from "@/components/Set/index.vue";
     import config from "@/../package.json";
@@ -68,8 +68,8 @@
         update: [],
     });
 
-    const getUpdateRecordsData = () => {
-        getLocalData("/data/updateRecords.json")
+    const loadUpdateRecordsData = () => {
+        loadData(import.meta.env.VITE_RECORDS_URL)
             .then((res) => {
                 updateRecords.fix = res.fix;
                 updateRecords.new = res.new;
@@ -87,21 +87,15 @@
                     }),
                 });
             });
-    }
+    };
 
     // 跳转源代码仓库
     const jumpTo = (url) => {
         window.open(url);
     };
 
-    const closeMoreSet = () => {
-        store.setOpenState = false;
-        let animate = document.querySelector(".animate");
-        animate.classList.remove("resize");
-    }
-
     onMounted(() => {
-        getUpdateRecordsData();
+        loadUpdateRecordsData();
     });
 </script>
 
@@ -118,7 +112,12 @@
         background: rgb(255 255 255 / 40%);
         border-radius: 6px;
         transform: translate(-50%, -50%);
-        -webkit-transform: translate(-50%, -50%);
+
+        @media (max-width: 720px) {
+            width: 90%;
+            height: 80%;
+            padding: 40px 20px;
+        }
 
         .close {
             position: absolute;
@@ -140,6 +139,13 @@
             flex-wrap: nowrap;
             height: 100%;
 
+            @media (max-width: 990px) {
+                :deep(.el-col-12) {
+                    max-width: 100%;
+                    flex: 0 0 100%;
+                }
+            }
+
             .left {
                 display: flex;
                 flex-direction: column;
@@ -147,6 +153,11 @@
                 height: 100%;
                 padding-bottom: 20px;
                 padding-left: 40px !important;
+                animation: fade 0.5s;
+
+                @media (max-width: 990px) {
+                    display: none;
+                }
 
                 .logo {
                     width: 100%;
@@ -165,7 +176,7 @@
                     align-items: center;
 
                     .num {
-                        font-size: 1.5rem;
+                        font-size: 1.25rem;
                     }
 
                     .github {
@@ -222,6 +233,15 @@
                 justify-content: center;
                 padding-right: 40px !important;
                 height: 100%;
+
+                @media (max-width: 990px) {
+                    padding-left: 40px !important;
+                }
+
+                @media (max-width: 720px) {
+                    padding-right: 20px !important;
+                    padding-left: 20px !important;
+                }
 
                 .title {
                     display: flex;

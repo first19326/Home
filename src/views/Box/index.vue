@@ -4,7 +4,7 @@
             <CloseOne class="close" theme="filled" size="28" fill="#FFFFFF60" v-show="closeShow" @click="store.boxOpenState = false" />
         </Transition>
         <Transition name="el-fade-in-linear">
-            <SettingTwo class="setting" theme="filled" size="28" fill="#FFFFFF60" v-show="closeShow" @click="openMoreSet" />
+            <SettingTwo class="setting" theme="filled" size="28" fill="#FFFFFF60" v-show="closeShow" @click="store.setOpenState = true" />
         </Transition>
         <div class="content">
             <TimeCapsule />
@@ -14,17 +14,11 @@
 
 <script setup>
     import { CloseOne, SettingTwo } from "@icon-park/vue-next";
-    import TimeCapsule from "@/components/TimeCapsule/index.vue";
     import { mainStore } from "@/store";
+    import TimeCapsule from "@/components/TimeCapsule/index.vue";
+
     const store = mainStore();
-
     let closeShow = ref(false);
-
-    const openMoreSet = () => {
-        store.setOpenState = true;
-        let animate = document.querySelector(".animate");
-        animate.classList.add("resize");
-    }
 </script>
 
 <style lang="scss" scoped>
@@ -34,8 +28,7 @@
         margin-left: 0.75rem;
         height: 80%;
         max-height: 864px;
-        animation: fade;
-        -webkit-animation: fade 0.5s;
+        animation: fade 0.5s;
 
         &:hover {
             transform: scale(1);
@@ -47,6 +40,9 @@
             right: 14px;
             width: 28px;
             height: 28px;
+            transition:
+                transform 0.3s,
+                opacity 0.3s;
 
             &:hover {
                 transform: scale(1.2);

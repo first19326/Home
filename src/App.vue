@@ -1,24 +1,32 @@
 <template>
-    <div class="animate">
-        <Background />
-        <main>
+    <!-- 加载 -->
+    <Loading />
+    <!-- 背景 -->
+    <Background @loadComplete="loadComplete" />
+    <!-- 主界面 -->
+    <Transition name="fade" mode="out-in">
+        <main id="main" v-if="store.imageLoadState">
             <div class="container" v-show="!store.backgroundShow">
                 <section class="main" v-show="!store.setOpenState">
-                    <MainLeft />
-                    <MainRight v-show="!store.boxOpenState" />
+                    <Left />
+                    <Right v-show="!store.boxOpenState" />
                     <Box v-show="store.boxOpenState" />
+                    <Music v-show="store.musicListShow" />
                 </section>
                 <section class="more" v-show="store.setOpenState" @click="store.setOpenState = false">
                     <MoreSet />
                 </section>
             </div>
             <!-- 移动端菜单按钮 -->
-            <Icon class="menu" size="24" @click="store.mobileOpenState = !store.mobileOpenState">
+            <Icon class="menu" size="24" v-show="!store.backgroundShow" @click="store.mobileOpenState = !store.mobileOpenState">
                 <component :is="store.mobileOpenState ? CloseSmall : HamburgerButton" />
             </Icon>
+            <!-- 页脚 -->
+            <Transition name="fade" mode="out-in">
+                <Footer v-show="!store.backgroundShow && !store.setOpenState" />
+            </Transition>
         </main>
-        <Footer v-show="!store.backgroundShow && !store.setOpenState" />
-    </div>
+    </Transition>
 </template>
 
 <script setup>
@@ -27,21 +35,22 @@
     import { mainStore } from "@/store";
     import { Icon } from "@vicons/utils";
     import { HamburgerButton, CloseSmall, Error } from "@icon-park/vue-next";
-    import { getLocalData } from "@/api"
-    import MainLeft from "@/views/Main/Left.vue";
-    import MainRight from "@/views/Main/Right.vue";
+    import { loadData } from "@/api"
+    import Loading from "@/components/Loading/index.vue";
+    import Left from "@/views/Main/Left.vue";
+    import Right from "@/views/Main/Right.vue";
     import Background from "@/components/Background/index.vue";
     import Footer from "@/components/Footer/index.vue";
     import Box from "@/views/Box/index.vue";
+    import Music from "@/views/Music/index.vue";
     import MoreSet from "@/views/MoreSet/index.vue";
     import cursorInit from "@/utils/cursor.js";
-
 
     const store = mainStore();
 
     const mourn = () => {
         // 获取默哀模式数据
-        getLocalData("/data/mourn.json")
+        loadData(import.meta.env.VITE_MOURN_URL)
             .then((res) => {
                 console.log(res);
 
@@ -54,16 +63,26 @@
                     message: "默哀模式数据获取失败",
                     grouping: true,
                     icon: h(Error, {
-                    theme: "filled",
-                    fill: "#EFEFEF",
+                        theme: "filled",
+                        fill: "#EFEFEF",
                     }),
                 });
             });
-    }
+    };
+
+    // 加载完成事件
+    const loadComplete = () => {
+        nextTick(() => {
+            // 欢迎提示
+            helloInit();
+            // 默哀模式
+            mourn();
+        });
+    };
 
     const consolePrint = () => {
         // 获取控制台内容
-        getLocalData("/data/console.json")
+        loadData(import.meta.env.VITE_CONSOLE_URL)
             .then((res) => {
                 console.log(res);
 
@@ -76,34 +95,32 @@
                     message: "控制台内容获取失败",
                     grouping: true,
                     icon: h(Error, {
-                    theme: "filled",
-                    fill: "#EFEFEF",
+                        theme: "filled",
+                        fill: "#EFEFEF",
                     }),
                 });
             });
-    }
+    };
 
-    // 页面宽度
-    const getWidth = () => {
+    // 调整页面宽度
+    const resizeWidth = () => {
         store.setInnerWidth(window.innerWidth);
+    };
+
+    const mousedownEvent = (event) => {
+        if (event.button == 1) {
+            store.backgroundShow = !store.backgroundShow;
+            if (store.backgroundShow) {
+                ElMessage("已开启背景图片展示状态");
+            } else {
+                ElMessage("已退出背景图片展示状态");
+            }
+        }
     };
 
     onMounted(() => {
         // 自定义鼠标
         cursorInit();
-        // 加载完成事件
-        window.addEventListener("load", () => {
-            console.log("加载完成");
-            // 去除加载标记
-            document.getElementsByTagName("body")[0].className = "";
-            // 给加载动画添加结束标记
-            let loadingBox = document.getElementById("loading-box");
-            loadingBox.classList.add("loaded");
-            // 欢迎提示
-            helloInit();
-            // 默哀模式
-            mourn();
-        });
 
         // 屏蔽右键
         document.oncontextmenu = () => {
@@ -116,20 +133,11 @@
         };
 
         // 鼠标中键事件
-        window.addEventListener("mousedown", (event) => {
-            if (event.button == 1) {
-                store.backgroundShow = !store.backgroundShow;
-                if (store.backgroundShow) {
-                    ElMessage("已开启壁纸展示状态");
-                } else {
-                    ElMessage("已退出壁纸展示状态");
-                }
-            }
-        });
+        window.addEventListener("mousedown", mousedownEvent);
 
         // 监听当前页面宽度
-        getWidth();
-        window.addEventListener("resize", getWidth);
+        resizeWidth();
+        window.addEventListener("resize", resizeWidth);
 
         // 控制台内容输出
         consolePrint();
@@ -138,25 +146,37 @@
     // 监听宽度变化
     watch(
         () => store.innerWidth,
-        (value) => {
-            if (value < 990) {
+        (innerWidth) => {
+            if (innerWidth <= 990) {
                 store.boxOpenState = false;
             }
         }
     );
 
     onBeforeUnmount(() => {
-        window.removeEventListener("resize", getWidth);
+        window.removeEventListener("mousedown", mousedownEvent);
+        window.removeEventListener("resize", resizeWidth);
     });
 </script>
 
 <style lang="scss" scoped>
-    main {
+    #main {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        min-width: 360px;
+        min-height: 640px;
+        transform: scale(1.2);
+        transition: transform 0.3s;
+        animation: fade-blur-main-in 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        animation-delay: 0.5s;
+        
         .container {
             margin: 0 auto;
             width: 100%;
             height: 100vh;
-            min-height: 600px;
 
             @media (max-width: 1200px) {
                 padding: 0 2vw;
@@ -180,10 +200,8 @@
                 height: 100%;
                 background-color: #00000080;
                 backdrop-filter: blur(20px);
-                -webkit-backdrop-filter: blur(20px);
                 z-index: 2;
-                animation: fade;
-                -webkit-animation: fade 0.5s;
+                animation: fade 0.5s;
             }
         }
         
@@ -198,49 +216,21 @@
             height: 34px;
             background: rgb(0 0 0 / 20%);
             backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
             border-radius: 6px;
-            transition: all 0.3s;
-            animation: fade;
-            -webkit-animation: fade 0.5s;
+            transition: transform 0.3s;
+            animation: fade 0.5s;
 
             &:active {
                 transform: scale(0.95);
             }
 
+            @media(min-width: 721px) {
+                display: none;
+            }
+
             .i-icon {
                 transform: translateY(2px);
             }
-            
-            @media (min-width: 720px) {
-                display: none;
-            }
-        }
-    }
-
-    // 加载动画层
-    .animate {
-        width: 100%;
-        height: 100%;
-        min-width: 350px;
-        min-height: 600px;
-        opacity: 1;
-        transition: all ease 1.25s;
-        transform: scale(1);
-        filter: blur(0);
-
-        &.resize {
-            min-width: 990px;
-            min-height: 750px;
-        }
-    }
-
-    .loading {
-        .animate {
-            opacity: 0;
-            transition: all ease 1.25s;
-            transform: scale(1.2);
-            filter: blur(10px);
         }
     }
 </style>

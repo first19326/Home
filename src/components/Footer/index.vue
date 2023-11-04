@@ -1,23 +1,25 @@
 <template>
-    <footer>
-        <div class="power" v-show="!store.playerShowLrc || !store.playerState">
-            <span>Copyright&nbsp;&copy;&nbsp;{{ startYear }}
-                <a :href="url">{{ author }}</a>
-            </span>
-            <!-- 站点备案 -->
-            <span v-if="filing.trim() != ''" class="filing hidden">&nbsp;&amp;&nbsp;</span>
-            <a v-if="filing.trim() != ''" class="filing hidden" href="https://beian.miit.gov.cn" target="_blank">{{ filing }}</a>
-            <!-- 公安备案 -->
-            <span v-if="police.trim() != ''" class="police hidden">&nbsp;&amp;&nbsp;</span>
-            <a v-if="police.trim() != ''" class="police hidden" href="https://www.beian.gov.cn/" target="_blank">{{ police }}</a>
-        </div>
-        <div class="lrc" v-show="store.playerShowLrc && store.playerState">
-            <MusicOne theme="filled" size="18" fill="#EFEFEF" />
-            <span class="lrc-text">
-                {{ store.getPlayerLrc ? store.getPlayerLrc : "&emsp;" }}
-            </span>
-            <MusicOne theme="filled" size="18" fill="#EFEFEF" />
-        </div>
+    <footer id="footer" :class="store.footerBlur ? 'blur' : null">
+        <Transition name="fade" mode="out-in">
+            <div class="power" v-if="!store.playerShowLrc || !store.playerState">
+                <span>Copyright&nbsp;&copy;&nbsp;{{ startYear ? startYear : new Date().getFullYear() }}
+                    <a :href="url">{{ author }}</a>
+                </span>
+                <!-- 站点备案 -->
+                <span v-if="filing" class="filing hidden">&nbsp;&amp;&nbsp;<a href="https://beian.miit.gov.cn" target="_blank">{{ filing }}</a></span>
+                <!-- 公安备案 -->
+                <span v-if="police" class="police hidden">&nbsp;&amp;&nbsp;<a href="https://www.beian.gov.cn/" target="_blank">{{ police }}</a></span>
+            </div>
+            <div class="lrc" v-else>
+                <Transition name="fade" mode="out-in">
+                    <div class="lrc-line" :key="store.getPlayerLrc">
+                        <MusicOne theme="filled" size="18" fill="#EFEFEF" />
+                        <span class="lrc-text text-hidden" v-html="store.getPlayerLrc" />
+                        <MusicOne theme="filled" size="18" fill="#EFEFEF" />
+                    </div>
+                </Transition>
+            </div>
+        </Transition>
     </footer>
 </template>
 
@@ -27,52 +29,59 @@
     const store = mainStore();
 
     const author = import.meta.env.VITE_SITE_AUTHOR;
-    const url = import.meta.env.VITE_SITE_URL;
-    const filing = import.meta.env.VITE_SITE_FILING;
-    const police = import.meta.env.VITE_SITE_POLICE;
+    const filing = import.meta.env.VITE_SITE_FILING.trim();
+    const police = import.meta.env.VITE_SITE_POLICE.trim();
+    const startYear = import.meta.env.VITE_SITE_START.trim().substr(0, 4);
 
-    let startYear = import.meta.env.VITE_SITE_START.substr(0, 4);
+    const url = computed(() => {
+        let siteUrl = import.meta.env.VITE_SITE_URL;
+        if (!siteUrl.startsWith("http://") && !siteUrl.startsWith("https://")) {
+            return "//" + siteUrl;
+        }
+        return siteUrl;
+    });
 </script>
 
 <style lang="scss" scoped>
-    footer {
-        display: flex;
-        flex-direction: column;
-        align-content: center;
-        justify-content: center;
-        align-items: center;
+    #footer {
         position: absolute;
         bottom: 0;
         left: 0;
         width: 100%;
         height: 35px;
-        background: rgb(0 0 0 / 25%);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
+        line-height: 35px;
         z-index: 0;
+        font-size: 14px;
         text-align: center;
-        animation: fade;
-        -webkit-animation: fade 0.5s;
+        overflow: hidden;
 
-        @media (max-width: 720px) {
-            .police.hidden {
-                display: none;
-            }
+        &.blur {
+            background: rgb(0 0 0 / 25%);
+            backdrop-filter: blur(10px);
+            font-size: 16px;
         }
 
-        @media (max-width: 480px) {
-            .filing.hidden {
-                display: none;
+        @media (max-width: 720px) {
+            font-size: 0.85rem;
+
+            &.blur {
+                font-size: 0.85rem;
             }
         }
 
         .power {
-            font-size: 0.9rem;
-            animation: fade;
-            -webkit-animation: fade 0.3s;
+            animation: fade 0.3s;
 
             @media (max-width: 720px) {
-                font-size: 0.85rem;
+                .police.hidden {
+                    display: none;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .filing.hidden {
+                    display: none;
+                }
             }
         }
 
@@ -82,31 +91,33 @@
             align-items: center;
             justify-content: center;
             padding: 0 20px;
-            animation: fade;
-            -webkit-animation: fade 0.3s;
 
-            @media (max-width: 720px) {
-                font-size: 0.85rem;
-            }
+            .lrc-line {
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+                width: 98%;
 
-            .lrc-text {
-                display: -webkit-box;
-                margin: 0 8px;
-                -webkit-box-orient: vertical;
-                -webkit-line-clamp: 1;
-                overflow: hidden;
-                word-break: break-all;
+                .lrc-text {
+                    margin: 0 8px;
 
-                @media (max-width: 720px) {
-                    margin-top: 2px;
+                    @media (max-width: 720px) {
+                        margin-top: 2px;
+                    }
+                }
+
+                .i-icon {
+                    display: inherit;
+                    width: 18px;
+                    height: 18px;
                 }
             }
+        }
 
-            .i-icon {
-                display: inherit;
-                width: 18px;
-                height: 18px;
-            }
+        .fade-enter-active, 
+        .fade-leave-active {
+            transition: opacity 0.15s ease-in-out;
         }
     }
 </style>

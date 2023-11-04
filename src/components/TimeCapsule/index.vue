@@ -34,7 +34,7 @@
     onMounted(() => {
         timeInterval = setInterval(() => {
             timeData.value = getTimeCapsule();
-            if (startDate.value)
+            if (startDate.value.trim())
                 startDateText.value = siteDateStatistics(new Date(startDate.value));
         }, 1000);
     });
