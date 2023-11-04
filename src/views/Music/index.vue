@@ -31,7 +31,7 @@
     let playIndex = ref(0);
     let playListCount = ref(0);
 
-    let skipTime = null;
+    let skipTimeout = null;
 
     onMounted(() => {
         loadMusicData();
@@ -166,7 +166,7 @@
         if (playList.value.length > 1) {
             notice = "播放音频出现错误，播放器将在 2s 后进行跳转";
             // 播放下一首
-            skipTime = setTimeout(() => {
+            skipTimeout = setTimeout(() => {
                 player.value.nextMusic();
                 if (!player.value.audio.paused) {
                     onPlay();
@@ -239,7 +239,7 @@
     );
 
     onBeforeUnmount(() => {
-        clearTimeout(skipTime);
+        clearTimeout(skipTimeout);
     });
 </script>
 <style lang="scss" scoped>
