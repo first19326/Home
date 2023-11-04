@@ -14,7 +14,7 @@ export default ({
     plugins: [
         vue(),
         AutoImport({
-            resolvers: [ElementPlusResolver()],
+            imports: ["vue"],
         }),
         Components({
             resolvers: [ElementPlusResolver()],

@@ -27,7 +27,6 @@
 </template>
 
 <script setup>
-    import { reactive, watch, onMounted, h } from "vue";
     import { Icon } from "@vicons/utils";
     import { QuoteLeft, QuoteRight } from "@vicons/fa";
     import { Error } from "@icon-park/vue-next";

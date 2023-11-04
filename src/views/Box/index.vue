@@ -13,7 +13,6 @@
 </template>
 
 <script setup>
-    import { ref } from "vue";
     import { CloseOne, SettingTwo } from "@icon-park/vue-next";
     import TimeCapsule from "@/components/TimeCapsule/index.vue";
     import { mainStore } from "@/store";

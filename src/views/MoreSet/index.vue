@@ -48,7 +48,6 @@
 </template>
 
 <script setup>
-    import { reactive, ref, onMounted, h } from "vue";
     import { CloseOne, SettingTwo, GithubOne, Bug, AddOne, ReduceOne, Redo, Error } from "@icon-park/vue-next";
     import { getLocalData } from "@/api";
     import { mainStore } from "@/store";

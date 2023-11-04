@@ -11,8 +11,7 @@
 </template>
 
 <script setup>
-    import { h, ref, onMounted } from "vue";
-    import { getLocalData } from "@/api";
+    import { loadData } from "@/api";
     import { Error } from "@icon-park/vue-next";
 
     // 社交链接数据

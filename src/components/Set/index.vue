@@ -48,7 +48,7 @@
 </template>
 
 <script setup>
-    import { h, ref, onMounted, watch } from "vue";
+    import { CheckSmall, CloseSmall, SuccessPicture, Error } from "@icon-park/vue-next";
     import { mainStore } from "@/store";
     import { CheckSmall, CloseSmall, Error } from "@icon-park/vue-next";
     import { storeToRefs } from "pinia";

@@ -9,8 +9,7 @@
 </template>
 
 <script setup>
-    import { onMounted, ref, watch, h } from "vue";
-    import { SuccessPicture, Error } from "@icon-park/vue-next";
+    import { Error } from "@icon-park/vue-next";
     import { mainStore } from "@/store";
     import { randomNum } from "@/utils/tools.js";
     import { getLocalData } from "@/api";

@@ -78,10 +78,6 @@
 </template>
 
 <script setup>
-    import { ref, onMounted, onBeforeUnmount, watch } from "vue";
-    import { GoStart, PlayOne, Pause, GoEnd, CloseOne, VolumeMute, VolumeSmall, VolumeNotice } from "@icon-park/vue-next";
-    import { getCurrentTime } from "@/utils/getTime";
-
     import Hitokoto from "@/components/Hitokoto/index.vue";
     import Weather from "@/components/Weather/index.vue";
     import Player from "@/components/Player/index.vue";

@@ -1,15 +1,10 @@
 <template>
     <aplayer ref="player" v-if="playList[0]" :music="playList[playIndex]" :list="playList" :autoplay="autoplay" :showLrc="showLrc" :mutex="mutex" :shuffle="shuffle" :repeat="repeat" :volume="volume" :theme="theme" :listMaxHeight="listMaxHeight" :listFolded="listFolded" @play="onPlay" @pause="onPause" @timeupdate="onTimeUp" @onSelectMusic="onSelectMusic" />
 </template>
-
 <script setup>
-    import aplayer from "vue3-aplayer";
-    import smoothScroll from 'smoothscroll';
-    import { h, ref, nextTick, onMounted } from "vue";
-    import { MusicOne, PlayWrong, Error } from "@icon-park/vue-next";
-    import { getPlayerList, getLocalData } from "@/api";
-    import { mainStore } from "@/store";
+    import { GoStart, PlayOne, Pause, GoEnd, VolumeMute, VolumeSmall, VolumeNotice } from "@icon-park/vue-next";
 
+    import { mainStore } from "@/store";
     const store = mainStore();
 
     // 获取播放器 DOM

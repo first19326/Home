@@ -22,7 +22,6 @@
 </template>
 
 <script setup>
-    import { h, onMounted, onBeforeUnmount, watch } from "vue";
     import { helloInit, checkDays } from "@/utils/getTime.js";
     import { consoleText } from "@/utils/tools.js";
     import { mainStore } from "@/store";
