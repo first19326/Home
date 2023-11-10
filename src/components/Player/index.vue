@@ -70,7 +70,9 @@
         () => volumeNum.value,
         (value) => {
             store.musicVolume = value;
-            value == 0 ? store.musicMuted = true : store.musicMuted = false;
+            if (value > 0) {
+                store.musicMuted = false;
+            }
         }
     );
 </script>
