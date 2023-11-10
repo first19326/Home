@@ -162,9 +162,9 @@
 
     // 加载音乐错误
     const loadMusicError = () => {
-        let notice = "";
+        let notice = "播放音频出现错误";
         if (playList.value.length > 1) {
-            notice = "播放音频出现错误，播放器将在 2s 后进行跳转";
+            notice += "，播放器将在 2s 后进行跳转";
             // 播放下一首
             skipTimeout = setTimeout(() => {
                 player.value.nextMusic();
@@ -172,8 +172,6 @@
                     onPlay();
                 }
             }, 2000);
-        } else {
-            notice = "播放音频出现错误";
         }
         ElMessage({
             message: notice,
@@ -184,7 +182,7 @@
                 duration: 2000,
             }),
         });
-        console.error("播放音乐: " + player.value.currentMusic.title + " 出现错误");
+        console.error("播放音频: " + player.value.currentMusic.title + " 出现错误");
     };
 
     // 当前播放音乐置顶显示
