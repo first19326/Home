@@ -130,6 +130,11 @@
             flex-direction: row;
             align-items: center;
             animation: fade 0.5s;
+            max-width: 460px;
+
+            @media (max-width: 720px) {
+                max-width: 100%;
+            }
 
             .logo-image {
                 width: 120px;
@@ -157,7 +162,7 @@
                         font-size: 2.5rem;
                     }
 
-                    @media (max-width: 720px) { 
+                    @media (max-width: 720px) {
                         font-size: 3.5rem;
                     }
 
