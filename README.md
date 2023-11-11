@@ -482,10 +482,17 @@ const methods = {
 * [Hitokoto 一言](https://hitokoto.cn/)
 
 ### 更新日志
+
 - 2023-11-11
 
   `F` 修复了音乐播放器静音的问题
 
+  <br/>
+  
+  `A` 新增了 `font-display` 属性
+  
+  `U` 修改了音乐播放器静音问题的解决方式
+  
   
   
 - 2023-11-10
