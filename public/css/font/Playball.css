@@ -1,4 +1,5 @@
 @font-face {
   font-family: "Playball";
+  font-display: swap;
   src: url('./Playball-Regular.ttf') format('truetype');
 }
