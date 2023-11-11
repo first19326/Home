@@ -37,7 +37,7 @@
 
     // 音量条数据
     let volumeShow = ref(false);
-    let volumeNum = ref(store.musicVolume);
+    let volumeNum = ref(store.musicVolume ? store.musicVolume : 0.7);
 
     // 键盘事件
     const keydownEvent = (e) => {
@@ -73,6 +73,8 @@
             if (value > 0) {
                 store.musicMuted = false;
             }
+        }, {
+            immediate: true
         }
     );
 </script>
