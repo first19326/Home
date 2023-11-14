@@ -13,9 +13,9 @@
             <div class="lrc" v-else>
                 <Transition name="fade" mode="out-in">
                     <div class="lrc-line" :key="store.getPlayerLrc">
-                        <MusicOne theme="filled" size="18" fill="#EFEFEF" />
-                        <span class="lrc-text text-hidden" v-html="store.getPlayerLrc" />
-                        <MusicOne theme="filled" size="18" fill="#EFEFEF" />
+                        <MusicOne theme="filled" size="18" fill="#EFEFEF" v-show="store.getPlayerLrc" />
+                        <span class="lrc-text text-hidden" v-html="store.getPlayerLrc || '&emsp;'" />
+                        <MusicOne theme="filled" size="18" fill="#EFEFEF" v-show="store.getPlayerLrc" />
                     </div>
                 </Transition>
             </div>

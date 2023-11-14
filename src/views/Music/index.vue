@@ -129,7 +129,7 @@
         if (store.playerShowLrc) {
             let playerRef = player.value.$.vnode.el;
             if (playerRef) {
-                let currentLrc = playerRef.querySelector(".aplayer-lrc-current")?.innerHTML || "&emsp;";
+                let currentLrc = playerRef.querySelector(".aplayer-lrc-current")?.innerHTML;
                 store.setPlayerLrc(currentLrc);
             }
         }
