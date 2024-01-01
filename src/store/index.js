@@ -25,9 +25,8 @@ export const mainStore = defineStore("main", {
             playerLrc: "歌词加载中", // 当前播放歌词
             playerAutoplay: false, // 自动播放
             playerShowLrc: true, // 歌词显示状态
-            playerMutex: true, // 暂停其他播放
-            playerShuffle: false, // 随机播放
-            playerRepeat: "list", // 循环播放模式
+            playerOrder: "list", // 随机播放
+            playerLoop: "all", // 循环播放模式
             footerBlur: false, // 底栏模糊
             sentenceState: true, // 每日一句开启状态
         }
@@ -84,6 +83,6 @@ export const mainStore = defineStore("main", {
     persist: {
         key: 'data',
         storage: window.localStorage,
-        paths: ['coverType', 'musicVolume', 'siteStartShow', 'playerAutoplay', 'playerShowLrc', 'playerMutex', 'playerShuffle', 'playerRepeat', 'footerBlur', 'sentenceState'],
+        paths: ['coverType', 'musicVolume', 'siteStartShow', 'playerAutoplay', 'playerShowLrc', 'playerOrder', 'playerLoop', 'footerBlur', 'sentenceState'],
     },
 })

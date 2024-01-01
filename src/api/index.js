@@ -19,18 +19,18 @@ export const getPlayerList = async (api, server, type, id) => {
             jsonpData.req_0.data.sip.find((i) => !i.startsWith("http://ws")) || jsonpData.req_0.data.sip[0]).replace("http://", "https://");
 
         return data.map((v, i) => ({
-            title: v.name || v.title,
+            name: v.name || v.title,
             artist: v.artist || v.author,
-            src: domain + jsonpData.req_0.data.midurlinfo[i].purl,
-            pic: v.pic,
+            url: domain + jsonpData.req_0.data.midurlinfo[i].purl,
+            cover: v.cover || v.pic,
             lrc: v.lrc,
         }));
     } else {
         return data.map((v) => ({
-            title: v.name || v.title,
+            name: v.name || v.title,
             artist: v.artist || v.author,
-            src: v.url,
-            pic: v.pic,
+            url: v.url,
+            cover: v.cover || v.pic,
             lrc: v.lrc,
         }));
     }

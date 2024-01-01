@@ -5,7 +5,7 @@
             <Transition name="zoom">
                 <div class="list" v-show="store.musicListShow" @click.stop>
                     <CloseOne class="close" theme="filled" size="28" fill="#FFFFFF60" @click="store.musicListShow = false" />
-                    <aplayer ref="player" v-if="playList[0]" :music="playList[playIndex]" :list="playList" :autoplay="store.playerAutoplay" :showLrc="store.playerShowLrc" :mutex="store.playerMutex" :shuffle="store.playerShuffle" :repeat="store.playerRepeat" :volume="store.musicVolume" theme="#EFEFEF" listMaxHeight="420px" :listFolded=false @play="onPlay" @pause="onPause" @timeupdate="onTimeUp" @onSelectMusic="onSelectMusic" @error="loadMusicError" />
+                    <APlayer :autoplay="store.playerAutoplay" theme="#EFEFEF" :autoSwitch="false" :loop="store.playerLoop" :order="store.playerOrder" :showLrc="true" :listFolded="false" :listMaxHeight="420" :noticeSwitch="false" @play="onPlay" @pause="onPause" @timeupdate="onTimeUp" @error="loadMusicError" ref="aplayer" />
                 </div>
             </Transition>
         </div>
@@ -13,8 +13,7 @@
     <!-- END -->
 </template>
 <script setup>
-    import aplayer from "vue3-aplayer";
-    import smoothScroll from "smoothscroll";
+    import APlayer from "@worstone/vue-aplayer";
     import { CloseOne, MusicOne, PlayWrong, Error } from "@icon-park/vue-next";
     import { getPlayerList, loadData } from "@/api";
     import { mainStore } from "@/store";
@@ -22,16 +21,7 @@
     const store = mainStore();
 
     // 获取播放器 DOM
-    const player = ref(null);
-
-    // 歌曲播放列表
-    let playList = ref([]);
-
-    // 歌曲播放项
-    let playIndex = ref(0);
-    let playListCount = ref(0);
-
-    let skipTimeout = null;
+    const aplayer = ref(null);
 
     onMounted(() => {
         loadMusicData();
@@ -60,42 +50,27 @@
     // 初始化播放器
     const initMusic = (music) => {
         nextTick(() => {
-            try {
-                getPlayerList(music.api || 'https://api.i-meto.com/meting/api/', music.server || 'netease', music.type || 'playlist', music.id || '3778678')
-                    .then((res) => {
-                        console.log(res);
-                        // 生成歌单信息
-                        playIndex.value = Math.floor(Math.random() * res.length);
-                        playListCount.value = res.length;
-                        // 更改播放器加载状态
-                        store.musicIsOk = true;
-                        // 生成歌单
-                        res.forEach((v) => {
-                            playList.value.push({
-                                title: v.name || v.title,
-                                artist: v.artist || v.author,
-                                src: v.url || v.src,
-                                pic: v.pic,
-                                lrc: v.lrc,
-                            });
-                        });
-                        console.log("音乐加载完成");
-                        console.log(playList.value);
-                        console.log(playIndex.value, playListCount.value, store.musicVolume);
-                    }
-                );
-            } catch (err) {
-                console.error(err);
-                store.musicIsOk = false;
-                ElMessage({
-                    message: "播放器加载失败",
-                    grouping: true,
-                    icon: h(PlayWrong, {
-                        theme: "filled",
-                        fill: "#EFEFEF",
-                    }),
+            getPlayerList(music.api || 'https://api.i-meto.com/meting/api/', music.server || 'netease', music.type || 'playlist', music.id || '3778678')
+                .then((res) => {
+                    console.log(res);
+                    // 更改播放器加载状态
+                    store.musicIsOk = true;
+                    // 生成歌单
+                    aplayer.value.addList(res);
+                    console.log("音乐加载完成");
+                })
+                .catch((err) => {
+                    console.error(err);
+                    store.musicIsOk = false;
+                    ElMessage({
+                        message: "播放器加载失败",
+                        grouping: true,
+                        icon: h(PlayWrong, {
+                            theme: "filled",
+                            fill: "#EFEFEF",
+                        }),
+                    });
                 });
-            }
         });
     };
 
@@ -103,13 +78,12 @@
     const onPlay = () => {
         console.log("播放");
         // 播放状态
-        store.setPlayerState(player.value.audio.paused);
+        store.setPlayerState(aplayer.value.audioRef.paused);
         // 储存播放器信息
         store.setPlayerData(
-            player.value.currentMusic.title,
-            player.value.currentMusic.artist
+            aplayer.value.aplayer.audio[aplayer.value.aplayer.index].name,
+            aplayer.value.aplayer.audio[aplayer.value.aplayer.index].artist
         );
-        scrollMusic();
         ElMessage({
             message: store.getPlayerData.name + " - " + store.getPlayerData.artist,
             grouping: true,
@@ -121,57 +95,68 @@
     };
 
     const onPause = () => {
-        store.setPlayerState(player.value.audio.paused);
+        store.setPlayerState(aplayer.value.audioRef.paused);
     };
 
     // 音频时间更新事件
     const onTimeUp = () => {
-        if (store.playerShowLrc) {
-            let playerRef = player.value.$.vnode.el;
-            if (playerRef) {
-                let currentLrc = playerRef.querySelector(".aplayer-lrc-current")?.innerHTML;
-                store.setPlayerLrc(currentLrc);
-            }
+        if (!store.playerShowLrc) {
+            return ;
         }
+        if (!aplayer.value.aplayer.lyrics[aplayer.value.aplayer.index]) {
+            return ;
+        }
+        if (!aplayer.value.aplayer.lyrics[aplayer.value.aplayer.index][aplayer.value.aplayer.lyricIndex]) {
+            return ;
+        }
+        let lrc = aplayer.value.aplayer.lyrics[aplayer.value.aplayer.index][aplayer.value.aplayer.lyricIndex][1];
+        if (lrc === "Loading") {
+            lrc = "歌词加载中"
+        } else if (lrc === "Not available") {
+            lrc = "歌词加载失败";
+        }
+        store.setPlayerLrc(lrc);
     };
 
     // 切换播放暂停事件
     const playToggle = () => {
-        player.value.toggle();
+        if (aplayer.value.aplayer.audio.length > 0) {
+            aplayer.value.toggle();
+        } else {
+            ElMessage({
+                message: "播放列表为空",
+                grouping: true,
+                icon: h(PlayWrong, {
+                    theme: "filled",
+                    fill: "#EFEFEF",
+                    duration: 2000,
+                }),
+            });
+        }
     };
 
     // 切换音量事件
     const changeVolume = (value) => {
-        player.value.audio.volume = value;
+        aplayer.value.setVolume(value, false);
     };
 
     // 切换静音状态
-    const onMuted = (value) => {
-        player.value.audio.muted = value;
-    };
-
-    const onSelectMusic = (val) => {
-        console.log(val);
+    const onMuted = () => {
+        aplayer.value.mute();
     };
 
     // 切换上下曲
     const changeMusic = (type) => {
         if (type === 0) return ; 
-        type === -1 ? player.value.prevMusic() : player.value.nextMusic();
+        type === -1 ? aplayer.value.skipBack() : aplayer.value.skipForward();
+        aplayer.value.play();
     };
 
     // 加载音乐错误
     const loadMusicError = () => {
         let notice = "播放音频出现错误";
-        if (playList.value.length > 1) {
+        if (aplayer.value.aplayer.audio.length > 1) {
             notice += "，播放器将在 2s 后进行跳转";
-            // 播放下一首
-            skipTimeout = setTimeout(() => {
-                player.value.nextMusic();
-                if (!player.value.audio.paused) {
-                    onPlay();
-                }
-            }, 2000);
         }
         ElMessage({
             message: notice,
@@ -182,24 +167,7 @@
                 duration: 2000,
             }),
         });
-        console.error("播放音频: " + player.value.currentMusic.title + " 出现错误");
-    };
-
-    // 当前播放音乐置顶显示
-    const scrollMusic = () => {
-        if (store.musicListShow) {
-            let index = playList.value.indexOf(player.value.currentMusic);
-            let musicList = player.value.$.vnode.el.querySelector('.aplayer-list ol');
-            smoothScroll(index * 33, 500, null, musicList);
-        }
-    };
-
-    const scrollTopMusic = () => {
-        let index = playList.value.indexOf(player.value.currentMusic);
-        let musicList = player.value.$.vnode.el.querySelector('.aplayer-list ol');
-        nextTick(() => {
-            musicList.scrollTop = index * 33;
-        });
+        console.error("播放音频: " + aplayer.value.aplayer.audio[aplayer.value.aplayer.index].name + " 出现错误");
     };
 
     // 监听音乐播放器状态
@@ -211,10 +179,8 @@
     );
     watch(
         () => store.musicListShow,
-        (musicListShow) => {
-            if (musicListShow) {
-                scrollTopMusic();
-            }
+        () => {
+            aplayer.value.toggleList();
         }
     );
     watch(
@@ -225,8 +191,8 @@
     );
     watch(
         () => store.musicMuted,
-        (musicMuted) => {
-            onMuted(musicMuted);
+        () => {
+            onMuted();
         }
     );
     watch(() => store.musicIndex,
@@ -235,10 +201,6 @@
             store.musicIndex = 0;
         }
     );
-
-    onBeforeUnmount(() => {
-        clearTimeout(skipTimeout);
-    });
 </script>
 <style lang="scss" scoped>
     .music-list {
@@ -289,10 +251,11 @@
 
             .aplayer {
                 width: 80%;
-                background: transparent;
                 border-radius: 6px;
 
                 :deep(.aplayer-body) {
+                    background-color: transparent;
+
                     .aplayer-pic {
                         display: none;
                     }
@@ -318,7 +281,7 @@
                         }
 
                         .aplayer-lrc {
-                            margin: 4px 0 6px 6px;
+                            margin: 7px 0 6px 6px;
                             height: 44px;
                             text-align: left;
                             mask: linear-gradient(#FFF 15%, #FFF 85%, hsla(0deg, 0%, 100%, 0.6) 90%, hsla(0deg, 0%, 100%, 0));
@@ -345,8 +308,12 @@
 
                 :deep(.aplayer-list) {
                     margin-top: 6px;
+                    height: 420px;
+                    background-color: transparent;
 
                     ol {
+                        height: 420px;
+
                         &::-webkit-scrollbar-track {
                             background-color: transparent;
                         }

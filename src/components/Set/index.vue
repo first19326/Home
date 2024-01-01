@@ -18,18 +18,14 @@
                     <el-switch v-model="playerShowLrc" inline-prompt :active-icon="CheckSmall" :inactive-icon="CloseSmall" />
                 </div>
                 <div class="item">
-                    <span class="text">暂停其他播放器（互斥）</span>
-                    <el-switch v-model="playerMutex" inline-prompt :active-icon="CheckSmall" :inactive-icon="CloseSmall" />
-                </div>
-                <div class="item">
                     <span class="text">随机播放</span>
-                    <el-switch v-model="playerShuffle" inline-prompt :active-icon="CheckSmall" :inactive-icon="CloseSmall" />
+                    <el-switch v-model="playerOrder" inline-prompt :active-icon="CheckSmall" :inactive-icon="CloseSmall" active-value="random" inactive-value="list" />
                 </div>
                 <div class="item radio">
                     <span class="text">循环播放模式</span>
-                    <el-radio-group v-model="playerRepeat" size="small" text-color="#FFFFFF">
-                        <el-radio label="music" border>单曲</el-radio>
-                        <el-radio label="list" border>列表</el-radio>
+                    <el-radio-group v-model="playerLoop" size="small" text-color="#FFFFFF">
+                        <el-radio label="all" border>列表</el-radio>
+                        <el-radio label="one" border>单曲</el-radio>
                         <el-radio label="none" border>不循环</el-radio>
                     </el-radio-group>
                 </div>
@@ -62,7 +58,7 @@
     import { loadData } from "@/api"
 
     const store = mainStore();
-    const { coverType, siteStartShow, playerAutoplay, playerShowLrc, playerMutex, playerShuffle, playerRepeat, footerBlur, sentenceState } = storeToRefs(store);
+    const { coverType, siteStartShow, playerAutoplay, playerShowLrc, playerOrder, playerLoop, footerBlur, sentenceState } = storeToRefs(store);
 
     // 默认选中项
     let activeName = ref("1");
