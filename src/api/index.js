@@ -16,7 +16,9 @@ export const getPlayerList = async (api, server, type, id) => {
         const [handle, jsonpCallback, jsonpCallbackFunction, url] = data[0].url.split("@").slice(1);
         const jsonpData = await fetchJsonp(url).then((res) => res.json());
         const domain = (
-            jsonpData.req_0.data.sip.find((i) => !i.startsWith("http://ws")) || jsonpData.req_0.data.sip[0]).replace("http://", "https://");
+            jsonpData.req_0.data.sip.find((i) => !i.startsWith("http://ws")) || 
+            jsonpData.req_0.data.sip[0]
+        ).replace("http://", "https://");
 
         return data.map((v, i) => ({
             name: v.name || v.title,
