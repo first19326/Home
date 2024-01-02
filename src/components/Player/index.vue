@@ -41,6 +41,10 @@
 
     // 键盘事件
     const keydownEvent = (e) => {
+        if (!store.musicIsOk) {
+            return ;
+        }
+
         // 空格键事件
         if (e.code == "Space") {
             store.playerToggle = !store.playerToggle;
