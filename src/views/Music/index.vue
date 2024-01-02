@@ -5,7 +5,7 @@
             <Transition name="zoom">
                 <div class="list" v-show="store.musicListShow" @click.stop>
                     <CloseOne class="close" theme="filled" size="28" fill="#FFFFFF60" @click="store.musicListShow = false" />
-                    <APlayer :autoplay="store.playerAutoplay" theme="#EFEFEF" :autoSwitch="false" :loop="store.playerLoop" :order="store.playerOrder" :showLrc="true" :listFolded="false" :listMaxHeight="420" :noticeSwitch="false" @play="onPlay" @pause="onPause" @timeupdate="onTimeUp" @error="loadMusicError" ref="aplayer" />
+                    <APlayer :autoplay="store.playerAutoplay" theme="#EFEFEF" :autoSwitch="false" :loop="store.playerLoop" :order="store.playerOrder" :volume="store.musicVolume" :showLrc="true" :listFolded="false" :listMaxHeight="420" :noticeSwitch="false" @play="onPlay" @pause="onPause" @timeupdate="onTimeUp" @error="loadMusicError" ref="aplayer" />
                 </div>
             </Transition>
         </div>
