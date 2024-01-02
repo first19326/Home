@@ -5,7 +5,7 @@
             <Transition name="zoom">
                 <div class="list" v-show="store.musicListShow" @click.stop>
                     <CloseOne class="close" theme="filled" size="28" fill="#FFFFFF60" @click="store.musicListShow = false" />
-                    <APlayer :autoplay="store.playerAutoplay" theme="#EFEFEF" :autoSwitch="false" :loop="store.playerLoop" :order="store.playerOrder" :volume="store.musicVolume" :showLrc="true" :listFolded="false" :listMaxHeight="420" :noticeSwitch="false" @play="onPlay" @pause="onPause" @timeupdate="onTimeUp" @error="loadMusicError" ref="aplayer" />
+                    <APlayer v-if="audios[0]" :audio="audios" :autoplay="store.playerAutoplay" theme="#EFEFEF" :autoSwitch="false" :loop="store.playerLoop" :order="store.playerOrder" :volume="store.musicVolume" :showLrc="true" :listFolded="false" :listMaxHeight="420" :noticeSwitch="false" @play="onPlay" @pause="onPause" @timeupdate="onTimeUp" @error="loadMusicError" ref="aplayer" />
                 </div>
             </Transition>
         </div>
@@ -22,6 +22,10 @@
 
     // 获取播放器 DOM
     const aplayer = ref(null);
+
+    // 音频数据
+    const index = ref(0);
+    const audios = ref([]);
 
     onMounted(() => {
         loadMusicData();
@@ -56,7 +60,7 @@
                     // 更改播放器加载状态
                     store.musicIsOk = true;
                     // 生成歌单
-                    aplayer.value.addList(res);
+                    audios.value = res;
                     console.log("音乐加载完成");
                 })
                 .catch((err) => {
@@ -77,12 +81,13 @@
     // 播放暂停事件
     const onPlay = () => {
         console.log("播放");
+        index.value = aplayer.value.aplayer.index;
         // 播放状态
         store.setPlayerState(aplayer.value.audioRef.paused);
         // 储存播放器信息
         store.setPlayerData(
-            aplayer.value.aplayer.audio[aplayer.value.aplayer.index].name,
-            aplayer.value.aplayer.audio[aplayer.value.aplayer.index].artist
+            audios.value[index.value].name,
+            audios.value[index.value].artist
         );
         ElMessage({
             message: store.getPlayerData.name + " - " + store.getPlayerData.artist,
@@ -103,15 +108,14 @@
         if (!store.playerShowLrc) {
             return ;
         }
-        if (!aplayer.value.aplayer.lyrics[aplayer.value.aplayer.index]) {
+        let lyrics = aplayer.value.aplayer.lyrics[aplayer.value.aplayer.index];
+        let lyricIndex = aplayer.value.aplayer.lyricIndex;
+        if (!lyrics || !lyrics[lyricIndex]) {
             return ;
         }
-        if (!aplayer.value.aplayer.lyrics[aplayer.value.aplayer.index][aplayer.value.aplayer.lyricIndex]) {
-            return ;
-        }
-        let lrc = aplayer.value.aplayer.lyrics[aplayer.value.aplayer.index][aplayer.value.aplayer.lyricIndex][1];
+        let lrc = lyrics[lyricIndex][1];
         if (lrc === "Loading") {
-            lrc = "歌词加载中"
+            lrc = "歌词加载中";
         } else if (lrc === "Not available") {
             lrc = "歌词加载失败";
         }
@@ -120,19 +124,7 @@
 
     // 切换播放暂停事件
     const playToggle = () => {
-        if (aplayer.value.aplayer.audio.length > 0) {
-            aplayer.value.toggle();
-        } else {
-            ElMessage({
-                message: "播放列表为空",
-                grouping: true,
-                icon: h(PlayWrong, {
-                    theme: "filled",
-                    fill: "#EFEFEF",
-                    duration: 2000,
-                }),
-            });
-        }
+        aplayer.value.toggle();
     };
 
     // 切换音量事件
@@ -155,7 +147,7 @@
     // 加载音乐错误
     const loadMusicError = () => {
         let notice = "播放音频出现错误";
-        if (aplayer.value.aplayer.audio.length > 1) {
+        if (audios.value.length > 1) {
             notice += "，播放器将在 2s 后进行跳转";
         }
         ElMessage({
@@ -167,7 +159,7 @@
                 duration: 2000,
             }),
         });
-        console.error("播放音频: " + aplayer.value.aplayer.audio[aplayer.value.aplayer.index].name + " 出现错误");
+        console.error("播放音频: " + audios.value[index.value].name + " 出现错误");
     };
 
     // 监听音乐播放器状态
