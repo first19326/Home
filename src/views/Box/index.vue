@@ -27,6 +27,7 @@
         position: relative;
         margin-left: 0.75rem;
         height: 80%;
+        min-height: 512px;
         max-height: 864px;
         animation: fade 0.5s;
 
@@ -61,6 +62,7 @@
             padding: 30px;
             width: 100%;
             height: 100%;
+            overflow-y: auto;
         }
     }
 </style>

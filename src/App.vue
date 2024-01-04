@@ -161,6 +161,11 @@
 
 <style lang="scss" scoped>
     #main {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: nowrap;
+        justify-content: center;
+        align-items: center;
         position: absolute;
         top: 0;
         left: 0;
